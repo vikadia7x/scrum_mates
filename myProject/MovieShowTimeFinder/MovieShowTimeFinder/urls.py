@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from showtimefinder import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signup.html', views.signup, name='signup'),
+    path('home.html', views.home, name='home'),
+    path('',views.landing, name = 'landing')
 ]
