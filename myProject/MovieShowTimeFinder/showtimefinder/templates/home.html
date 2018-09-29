@@ -1,4 +1,20 @@
 {% extends "base.html" %}
 {%block content%}
 <h3> This is where my home !!! </h3>
+<form method='post'>
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+    <p>{{ movielist.0.0.0 }}</p>
+    <p>{{ movielist.0.0.1 }}</p>
+    <p>{{ movielist.0.0.2 }}</p>
+    <p>{{ movielist.0.0.3.movie_name }}</p>
+    <img src = "{{ movielist.0.0.3.movie_imgURL }}">
+    <p>{{ movielist.0.0.3.movie_duration }}</p>
+    <p>{{ movielist.0.0.3.movie_rating }}/10</p>
+    <p>{{ movielist.0.0.3.movie_showtime }}</p>
+    <p>{{ movielist.0.0.3.movie_showdate }}</p>
+    <button type="submit">Sign up</button>
+  </form>
 {% endblock %}
