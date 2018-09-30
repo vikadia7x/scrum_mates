@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {%block content%}
+<div>
+<h3> This is where my home !!! </h3>
+{% if user.is_authenticated %}
+      Hi {{ user.username }}!
+      <p><a href="{% url 'logout' %}">logout</a></p>
+    {% else %}
+      <p>You are not logged in</p>
+      <a href="{% url 'login' %}">login</a>
+    {% endif %}
+</div>
+<div>
 <h2 align="center">Movie Showtime Finder</h2>
 
 <p style="text-align:right;">Logout</p>
 <p style="text-align:right;">Edit Profile</p>
-
 
 <h3 align="center">Welcome User! Your homepage gives you a list of movies in theatres near you.!!</h3>
 
@@ -22,14 +32,14 @@
     height: 25px;
     position:relative;
       }
-    </style> 
+    </style>
 
 <form method='post' align = "center">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Submit">        
+        <input type="submit" value="Submit">
     </form>
- 
+
     <table>
         <tr>
             <th>Theatre Name</th>
@@ -42,19 +52,19 @@
             <th>Movie Showtime</th>
             <th>Movie Showdate</th>
           </tr>
-          
+
           {% for movielisttype in movielist|slice:":1" %}
             {% for movielistall in movielisttype|slice:":5" %}
             <tr>
-              
+
               {% for movieinfo in movielistall|slice:"3:" %}
 
               <td>{{ movielistall.0 }}</td>
-              
+
               <td>{{ movielistall.1 }}</td>
-              
+
               <td>{{ movielistall.2 }}</td>
-              
+
               <td><img src = "{{ movieinfo.1 }}"></td>
 
               <td>{{ movieinfo.0 }}</td>
@@ -72,6 +82,5 @@
             {% endfor %}
           {% endfor %}
     </table>
-
-
+  </div>
 {% endblock %}

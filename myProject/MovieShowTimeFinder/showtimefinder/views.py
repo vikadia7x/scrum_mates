@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , HttpResponse
 from showtimefinder.forms import SignUpForm
 from showtimefinder.forms import SearchForm
 from showtimefinder.models import User
