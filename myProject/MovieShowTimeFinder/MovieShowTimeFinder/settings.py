@@ -55,7 +55,7 @@ ROOT_URLCONF = 'MovieShowTimeFinder.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,6 +80,22 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+""" DATABASES = {
+     'default': {
+         'ENGINE': 'sql_server.pyodbc',
+         'NAME': 'showtimefinder_db',
+         'USER': 'user@scrum_mates',
+         'PASSWORD': 'Azure@Cloud',
+         'HOST': 'shotimefinder.database.windows.net',
+         'PORT': '1433',
+         'OPTIONS': {
+             'driver': 'ODBC Driver 13 for SQL Server',
+             'MARS_Connection': 'True',
+         }
+     }
+ } """
+
 
 
 # Password validation
