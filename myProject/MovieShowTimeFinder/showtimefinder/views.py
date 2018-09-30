@@ -36,6 +36,11 @@ def signup(request):
 def landing(request):
     return render(request,'landing.html')
 
+def userprofile(request):
+    #print("Hi ! Welcome")
+    args = {'user': request.user}
+    return render(request,'userprofile.html', args)
+
 # def home(request):
 #     return render(request,'home.html')
 
