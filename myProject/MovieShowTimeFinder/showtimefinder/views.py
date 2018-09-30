@@ -54,7 +54,6 @@ def home(request):
             'form': form,
             'movielist' : movielist
         }
-        #print(args['movielist'][0][0])
         return render(request, 'home.html', args)
     else:
         #print("here")
@@ -119,15 +118,15 @@ def scrapeData(response):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
                     movie_showtime = 'NA'
-                movie_details = {
-                    'movie_name' : movie_name,
-                    'movie_imgURL' : movie_imgURL,
-                    'movie_duration' : movie_duration,
-                    'movie_rating' : movie_rating,
-                    'movie_showtime' : movie_showtime,
-                    'movie_showdate' : movie_showdate
-                }
-                movielistall.append(dict(movie_details))
+                movie_details = [
+                     movie_name,
+                     movie_imgURL,
+                     movie_duration,
+                     movie_rating,
+                     movie_showtime,
+                     movie_showdate
+                     ]
+                movielistall.append(movie_details)
             movielistodd.append(movielistall)
             movielist.append(movielistodd)
 
@@ -173,15 +172,15 @@ def scrapeData(response):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
                     movie_showtime = 'NA'
-                movie_details = {
-                    'movie_name' : movie_name,
-                    'movie_imgURL' : movie_imgURL,
-                    'movie_duration' : movie_duration,
-                    'movie_rating' : movie_rating,
-                    'movie_showtime' : movie_showtime,
-                    'movie_showdate' : movie_showdate
-                }
-                movielistall.append(dict(movie_details))
+                movie_details = [
+                     movie_name,
+                     movie_imgURL,
+                     movie_duration,
+                     movie_rating,
+                     movie_showtime,
+                     movie_showdate
+                    ]
+                movielistall.append(movie_details)
             movielisteven.append(movielistall)
             movielist.append(movielisteven)
             return movielist
