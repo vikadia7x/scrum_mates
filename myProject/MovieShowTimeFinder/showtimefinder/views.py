@@ -54,7 +54,6 @@ def home(request):
             'form': form,
             'movielist' : movielist
         }
-        print(args['movielist'])
         return render(request, 'home.html', args)
     else:
         #print("here")
