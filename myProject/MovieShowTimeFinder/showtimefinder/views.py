@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , HttpResponse
 from showtimefinder.forms import SignUpForm
 from showtimefinder.forms import SearchForm
 from showtimefinder.models import User
@@ -26,6 +26,8 @@ def signup(request):
             obj.last_name = form.cleaned_data['last_name']
             obj.email = form.cleaned_data['email']
             obj.dateofbirth = form.cleaned_data['dateofbirth']
+            obj.zipcode = form.cleaned_data['zipcode']
+            obj.username1 = form.cleaned_data['username1']
             obj.save()
             #login(request, user)
             return redirect('home.html')
@@ -38,8 +40,12 @@ def landing(request):
 
 def userprofile(request):
     #print("Hi ! Welcome")
-    args = {'user': request.user}
-    return render(request,'userprofile.html', args)
+    user = User.objects.filter(username1=request.user.username).values()
+    #print(user[0].get('zipcode'))
+    userdetails = {
+    'zipcode': user[0].get('zipcode'),
+    'dateofbirth': user[0].get('dateofbirth')}
+    return render(request,'userprofile.html', userdetails)
 
 # def home(request):
 #     return render(request,'home.html')
@@ -59,7 +65,6 @@ def home(request):
             'form': form,
             'movielist' : movielist
         }
-        #print(args['movielist'][0][0])
         return render(request, 'home.html', args)
     else:
         #print("here")
@@ -124,15 +129,15 @@ def scrapeData(response):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
                     movie_showtime = 'NA'
-                movie_details = {
-                    'movie_name' : movie_name,
-                    'movie_imgURL' : movie_imgURL,
-                    'movie_duration' : movie_duration,
-                    'movie_rating' : movie_rating,
-                    'movie_showtime' : movie_showtime,
-                    'movie_showdate' : movie_showdate
-                }
-                movielistall.append(dict(movie_details))
+                movie_details = [
+                     movie_name,
+                     movie_imgURL,
+                     movie_duration,
+                     movie_rating,
+                     movie_showtime,
+                     movie_showdate
+                     ]
+                movielistall.append(movie_details)
             movielistodd.append(movielistall)
             movielist.append(movielistodd)
 
@@ -178,15 +183,15 @@ def scrapeData(response):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
                     movie_showtime = 'NA'
-                movie_details = {
-                    'movie_name' : movie_name,
-                    'movie_imgURL' : movie_imgURL,
-                    'movie_duration' : movie_duration,
-                    'movie_rating' : movie_rating,
-                    'movie_showtime' : movie_showtime,
-                    'movie_showdate' : movie_showdate
-                }
-                movielistall.append(dict(movie_details))
+                movie_details = [
+                     movie_name,
+                     movie_imgURL,
+                     movie_duration,
+                     movie_rating,
+                     movie_showtime,
+                     movie_showdate
+                    ]
+                movielistall.append(movie_details)
             movielisteven.append(movielistall)
             movielist.append(movielisteven)
             return movielist
