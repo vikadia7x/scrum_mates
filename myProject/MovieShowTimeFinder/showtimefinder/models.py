@@ -6,3 +6,5 @@ class User(models.Model):
     last_name = models.TextField(max_length=500, blank=True)
     email = models.EmailField(blank=False)
     dateofbirth = models.DateField(blank=False, default = '1992-01-01')
+    username1 = models.TextField(blank=True)
+    zipcode = models.TextField(blank=True)

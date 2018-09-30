@@ -26,6 +26,8 @@ def signup(request):
             obj.last_name = form.cleaned_data['last_name']
             obj.email = form.cleaned_data['email']
             obj.dateofbirth = form.cleaned_data['dateofbirth']
+            obj.zipcode = form.cleaned_data['zipcode']
+            obj.username1 = form.cleaned_data['username1']
             obj.save()
             #login(request, user)
             return redirect('home.html')
@@ -35,6 +37,15 @@ def signup(request):
 
 def landing(request):
     return render(request,'landing.html')
+
+def userprofile(request):
+    #print("Hi ! Welcome")
+    user = User.objects.filter(username1=request.user.username).values()
+    #print(user[0].get('zipcode'))
+    userdetails = {
+    'zipcode': user[0].get('zipcode'),
+    'dateofbirth': user[0].get('dateofbirth')}
+    return render(request,'userprofile.html', userdetails)
 
 # def home(request):
 #     return render(request,'home.html')
