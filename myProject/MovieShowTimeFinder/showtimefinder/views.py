@@ -36,7 +36,36 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 def landing(request):
-    return render(request,'landing.html')
+    if(request.method == 'POST'):
+        form  = SearchForm(request.POST)
+        if form.is_valid():
+            text = form.cleaned_data['post']
+            form = SearchForm()
+        url = 'https://www.imdb.com/showtimes/US/{}'
+        response = get(url.format(text))
+        movielist = scrapeData(response)
+
+        args = {
+            'text': text,
+            'form': form,
+            'movielist' : movielist
+        }
+        return render(request, 'landing.html', args)
+    else:
+        #print("here")
+        form = SearchForm()
+        g = geocoder.ip('me')
+        print(g)
+        url = 'https://www.imdb.com/showtimes/US/{}'
+        response = get(url.format(g.postal))
+        #text = '85281'
+        #response = get(url.format(text))
+        movielist = scrapeData(response)
+        args = {
+            'movielist' : movielist,
+            'form': form
+        }
+        return render(request, 'landing.html', args)
 
 def userprofile(request):
     #print("Hi ! Welcome")
