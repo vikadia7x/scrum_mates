@@ -1,17 +1,12 @@
 {% extends "base.html" %}
 {%block content%}
 <div>
-<h3> This is where my landing page !!! </h3>
-      <a href="{% url 'login' %}">login</a>
-      <a href="{% url 'signup' %}">signup</a>
-</div>
-<div>
-<h2 align="center">Movie Showtime Finder</h2>
+<a href="{% url 'login' %}">login</a>
+<a href="{% url 'signup' %}">signup</a>
 
+<h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
 
-<h3 align="center">Welcome User! Find you favourite movies in theatres near you.!!</h3>
-
-<h4 align="center" style="color: red;">Enter the Zip Code</h4>
+<h4 align="center">Enter the Zip Code</h4>
 
 <style>
     form {
@@ -33,7 +28,7 @@
         <input type="submit" value="Submit">
     </form>
 
-    <table>
+    <table class="table table-striped">
         <tr>
             <th>Theatre Name</th>
             <th>Address</th>

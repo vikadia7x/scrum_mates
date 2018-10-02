@@ -71,7 +71,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MovieShowTimeFinder.wsgi.application'
 
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'landing'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
