@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {%block content%}
-<h2 align="center">Movie Showtime Finder</h2>
-
-<p style="text-align:right;">Logout</p>
-<p style="text-align:right;">Edit Profile</p>
-
-
-<h3 align="center">Welcome User! Your homepage gives you a list of movies in theatres near you.!!</h3>
-
-<h4 align="center" style="color: red;">Enter the Zip Code</h4>
+<div>
+      {% if user.is_authenticated %}
+      <p><a href="{% url 'logout' %}">Logout</a></p>
+      <p><a href="{% url 'userprofile' %}">Profile</a></p>
+      <h3 align="center">Welcome {{ user.username }}! Your homepage gives you a list of movies in theatres near you.!!</h3>
+    {% else %}
+      <p>You are not logged in</p>
+      <a href="{% url 'login' %}">login</a>
+      <h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
+    {% endif %}
+    <h4 align="center" style="color: red;">Enter the Zip Code</h4>
 
 <style>
     form {
@@ -22,15 +24,15 @@
     height: 25px;
     position:relative;
       }
-    </style> 
+    </style>
 
 <form method='post' align = "center">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Submit">        
+        <input type="submit" value="Submit">
     </form>
- 
-    <table>
+
+    <table class="table table-striped">
         <tr>
             <th>Theatre Name</th>
             <th>Address</th>
@@ -42,19 +44,19 @@
             <th>Movie Showtime</th>
             <th>Movie Showdate</th>
           </tr>
-          
+
           {% for movielisttype in movielist|slice:":1" %}
             {% for movielistall in movielisttype|slice:":5" %}
             <tr>
-              
+
               {% for movieinfo in movielistall|slice:"3:" %}
 
               <td>{{ movielistall.0 }}</td>
-              
+
               <td>{{ movielistall.1 }}</td>
-              
+
               <td>{{ movielistall.2 }}</td>
-              
+
               <td><img src = "{{ movieinfo.1 }}"></td>
 
               <td>{{ movieinfo.0 }}</td>
@@ -72,6 +74,5 @@
             {% endfor %}
           {% endfor %}
     </table>
-
-
+  </div>
 {% endblock %}

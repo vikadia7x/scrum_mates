@@ -70,6 +70,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MovieShowTimeFinder.wsgi.application'
 
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'landing'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -135,3 +137,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'icorpsdev@gmail.com'
+# EMAIL_HOST_PASSWORD = 'Nomanali7972'

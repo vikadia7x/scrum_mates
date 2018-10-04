@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , HttpResponse
 from showtimefinder.forms import SignUpForm
 from showtimefinder.forms import SearchForm
 from showtimefinder.models import User
@@ -21,11 +21,14 @@ def signup(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
+            print(user)
             user.save()
             obj.first_name = form.cleaned_data['first_name']
             obj.last_name = form.cleaned_data['last_name']
             obj.email = form.cleaned_data['email']
             obj.dateofbirth = form.cleaned_data['dateofbirth']
+            obj.zipcode = form.cleaned_data['zipcode']
+            obj.username1 = user.username
             obj.save()
             #login(request, user)
             return redirect('home.html')
@@ -34,7 +37,42 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 def landing(request):
-    return render(request,'landing.html')
+    if(request.method == 'POST'):
+        form  = SearchForm(request.POST)
+        if form.is_valid():
+            text = form.cleaned_data['post']
+            form = SearchForm()
+        url = 'https://www.imdb.com/showtimes/US/{}'
+        response = get(url.format(text))
+        movielist = scrapeData(response)
+
+        args = {
+            'text': text,
+            'form': form,
+            'movielist' : movielist
+        }
+        return render(request, 'landing.html', args)
+    else:
+        #print("here")
+        form = SearchForm()
+        g = geocoder.ip('me')
+        url = 'https://www.imdb.com/showtimes/US/{}'
+        response = get(url.format(g.postal))
+        movielist = scrapeData(response)
+        args = {
+            'movielist' : movielist,
+            'form': form
+        }
+        return render(request, 'landing.html', args)
+
+def userprofile(request):
+    #print("Hi ! Welcome")
+    user = User.objects.filter(username1=request.user.username).values()
+    #print(user[0].get('zipcode'))
+    userdetails = {
+    'zipcode': user[0].get('zipcode'),
+    'dateofbirth': user[0].get('dateofbirth')}
+    return render(request,'userprofile.html', userdetails)
 
 # def home(request):
 #     return render(request,'home.html')
@@ -56,14 +94,11 @@ def home(request):
         }
         return render(request, 'home.html', args)
     else:
-        #print("here")
         form = SearchForm()
-        g = geocoder.ip('me')
-        print(g)
+        user = User.objects.filter(username1=request.user.username).values()
+        zipcode = user[0].get('zipcode')
         url = 'https://www.imdb.com/showtimes/US/{}'
-        response = get(url.format(g.postal))
-        #text = '85281'
-        #response = get(url.format(text))
+        response = get(url.format(zipcode))
         movielist = scrapeData(response)
         args = {
             'movielist' : movielist,
