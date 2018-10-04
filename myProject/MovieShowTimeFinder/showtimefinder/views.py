@@ -31,7 +31,7 @@ def signup(request):
             obj.username1 = user.username
             obj.save()
             #login(request, user)
-            return redirect('home.html')
+            return redirect('landing.html')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -152,7 +152,7 @@ def scrapeData(response):
                 if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
-                    movie_showtime = 'NA'
+                    movie_showdate = 'NA'
                 movie_details = [
                      movie_name,
                      movie_imgURL,
