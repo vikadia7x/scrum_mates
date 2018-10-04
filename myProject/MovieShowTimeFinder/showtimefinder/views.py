@@ -206,7 +206,7 @@ def scrapeData(response):
                 if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
                     movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
                 else:
-                    movie_showtime = 'NA'
+                    movie_showdate = 'NA'
                 movie_details = [
                      movie_name,
                      movie_imgURL,
