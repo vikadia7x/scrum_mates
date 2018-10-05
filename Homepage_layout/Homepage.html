@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="poster/logo1.png" />
+    <title>Movie SHowtime Finder</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <meta name="udacity-grader" content="tests.json">
+    <style>
+    *{
+      background-color: teal;
+      color: white;
+    }
+
+    #header{
+
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 25%;
+
+      background-color: $main-color;
+      /*background-color: #f1f1f1;*/
+      /* Full height*/
+    }
+    #header1{
+
+
+      display: inline-block;
+      width: auto;
+      height: auto;
+      align-self: center;
+      background-color: $main-color;
+    /*  background-color: #f1f1f1;*/
+      /* Full height*/
+    }
+    .menu {
+      display: inline-block;
+      float: right;
+      margin: 2px;
+      padding: 1px;
+      width: 400px;
+      /*background-color: #f1f1f1;*/
+      height: 80px; /* Full height */
+
+    }
+    ul {
+      position: relative;
+      top: 150px;
+      right: 40px;
+
+      list-style-type: none;
+      float: right;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      /*background-color: #f1f1f1;*/
+      height: 50px; /* Full height */
+      position: relative; /* Make it stick, even on scroll */
+      overflow: auto; /* Enable scrolling if the sidenav has too much content */
+
+  /*  list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    border: 1px solid #555;*/
+}
+li {
+    float: right;
+}
+
+a {
+    display: block;
+    padding: 2px;
+    background-color: #dddddd;
+}
+
+li a {
+
+    display: inline-block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+    text-align: center;
+    border-bottom: 1px solid #555;
+}
+li:last-child {
+    border-bottom: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+    background-color: #555;
+    color: white;
+}
+.poster {
+  display: block;
+  width: 1349px;
+  height:250px;
+  background-color: $main_color;
+  border: 1px solid #555;
+  margin:2px;
+  padding: 1px 2px 3px 4px;
+}
+
+.column {
+  float: left;
+  align-items: center;
+  width: 15%;
+  padding: 3px;
+}
+
+#search {
+
+  display: inline-block;
+  padding-left: 150px;
+  height: 150px;
+  width: 100%;
+  border: 1px solid #555;
+}
+
+#search-text-input{
+
+    border-top:thin solid  #e5e5e5;
+    border-right:thin solid #e5e5e5;
+    border-bottom:0;
+    border-left:thin solid  #e5e5e5;
+    box-shadow:0px 1px 1px 1px #e5e5e5;
+    float:left;
+    height:17px;
+    margin:.8em 0 0 .5em;
+    outline:0;
+    padding:.4em 0 .4em .6em;
+    width:250px;
+    background-color: white;
+    color: black;
+
+display: inline-block;
+
+}
+
+
+#button-holder{
+    background-color:#f1f1f1;
+    border-top:thin solid #e5e5e5;
+    box-shadow:1px 1px 1px 1px #e5e5e5;
+    cursor:pointer;
+    float:left;
+    height:27px;
+    margin:11px 0 0 0;
+    text-align:center;
+    width:50px;
+}
+
+#button-holder img{
+    margin:4px;
+    width:20px;
+}
+
+.recommendation{
+  border: 1px solid #555;
+}
+
+.movie {
+	width: 100%;
+	clear: both;
+}
+.movie img {
+	float: left;
+  padding: 5px;
+}
+.movie span {
+	display: table-cell;
+	vertical-align: top;
+	height: 240px;
+  padding: 5px;
+}
+
+
+/* Clear floats after image containers */
+/*.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}*/
+
+    </style>
+  </head>
+
+  <body>
+    <nav id="header">
+      <div id="header1">
+        <IMG SRC="poster/logo1.png" ALT="Movie Showtime Finder" WIDTH=120 HEIGHT=100>
+      </div>
+
+
+      <div class="menu">
+
+        <ul>
+          <li><a href="default.asp">Home</a></li>
+          <li><a href="news.asp">Profile</a></li>
+          <li><a href="contact.asp">Notification</a></li>
+          <li><a href="about.asp">About</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div id="search">
+      <h3>Please search with your zip code for recommended movie listing</h3>
+      <input type='text' placeholder='Search...' id='search-text-input' />
+      <div id='button-holder'>
+        <img src='poster/search_icon.jpg'/>
+      </div>
+    </div>
+    <h2> Hey Username!</h2>
+    <h3> Here are some movies you may like </h3>
+    <div class="poster">
+      <div class="row">
+        <div class="column">
+          <img src="poster/sisbro9133.jpg" alt="Snow" style="width:80%">
+        </div>
+        <div class="column">
+          <img src="poster/Venom-poster-6.jpg" alt="Forest" style="width:80%">
+        </div>
+        <div class="column">
+          <img src="poster/3829266.jpg" alt="Mountains" style="width:80%">
+        </div>
+        <div class="column">
+          <img src="poster/5814060.jpg" alt="Mountains" style="width:80%">
+        </div>
+        <div class="column">
+          <img src="poster/7040874.jpg" alt="Mountains" style="width:80%">
+        </div>
+        <div class="column">
+          <img src="poster/creed_ii_ver4_xlg.jpg" alt="Mountains" style="width:80%">
+        </div>
+      </div>
+    </div>
+
+    <h3> In a theatre near you</h3>
+    <div class="recommendation">
+      <div class="movie">
+				<img src="poster/creed_ii_ver4_xlg.jpg" width="200">
+				<span>
+          <h3>Movie title</h3>
+          <p>India (won 7 times) is the most successful team in the ODI format of the tournament. Sri Lanka is the second most successful team with 5 titles. India is the most successful team in the T20I format having won the inaugural (only) version in 2016. India is the most successful team in the tournament having won it seven times (six times in ODI format and once in the T20 format). Sri Lanka has played the most Asia Cups (14) followed by India and Pakistan who have played 13 each.</p>
+          <a href="https://www.youtube.com/watch?v=TRa9IMvccjg" style="color: #cc0000; background-color: teal;">Watch the tailer now</a>
+        </span>
+			</div>
+      <div class="movie">
+				<img src="poster/creed_ii_ver4_xlg.jpg" width="200">
+				<span>
+          <h3>Movie title</h3>
+          <p>India (won 7 times) is the most successful team in the ODI format of the tournament. Sri Lanka is the second most successful team with 5 titles. India is the most successful team in the T20I format having won the inaugural (only) version in 2016. India is the most successful team in the tournament having won it seven times (six times in ODI format and once in the T20 format). Sri Lanka has played the most Asia Cups (14) followed by India and Pakistan who have played 13 each.</p>
+          <a href="https://www.youtube.com/watch?v=TRa9IMvccjg" style="color: #cc0000; background-color: teal;">Watch the tailer now</a>
+        </span>
+			</div>
+      <div class="movie">
+				<img src="poster/creed_ii_ver4_xlg.jpg" width="200">
+				<span>
+          <h3>Movie title</h3>
+          <p>India (won 7 times) is the most successful team in the ODI format of the tournament. Sri Lanka is the second most successful team with 5 titles. India is the most successful team in the T20I format having won the inaugural (only) version in 2016. India is the most successful team in the tournament having won it seven times (six times in ODI format and once in the T20 format). Sri Lanka has played the most Asia Cups (14) followed by India and Pakistan who have played 13 each.</p>
+          <a href="https://www.youtube.com/watch?v=TRa9IMvccjg" style="color: #cc0000; background-color: teal;">Watch the tailer now</a>
+        </span>
+			</div>
+
+    </div>
+  </body>
+</html>
