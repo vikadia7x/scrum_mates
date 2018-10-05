@@ -31,13 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'showtimefinder',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'showtimefinder'
+    
 ]
 
 MIDDLEWARE = [
@@ -98,8 +99,6 @@ DATABASES = {
      }
  } """
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -139,6 +138,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 
 # EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")

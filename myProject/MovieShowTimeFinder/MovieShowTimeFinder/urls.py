@@ -21,25 +21,20 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from django.conf.urls import url
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('signup.html', views.signup, name='signup'),
     path('home.html', views.home, name='home'),
-    #path('',views.landing, name = 'landing'),
-    path('userprofile.html',views.userprofile, name='userprofile'),
+    # path('',views.landing, name = 'landing'),
+    path('userprofile.html', views.userprofile, name='userprofile'),
     # path('home/', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('landing.html',views.landing, name = 'landing'),
-    path('accounts/',include('django.contrib.auth.urls'))
+    path('landing.html', views.landing, name='landing'),
+    
     # path('accounts/', auth_views.login, name='login'),
 
-
-
-
-
-     # path('accounts/', auth_views.password_reset , name='password_reset_form'),
+    # path(r'^accounts/', auth_views.password_reset, name='password_reset_form'),
     # url(r'^password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
-    # url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-    #     auth_views.password_reset_confirm, name='password_reset_confirm'),
+    # url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
     # url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
 ]
