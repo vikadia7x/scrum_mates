@@ -74,6 +74,10 @@ def userprofile(request):
     'dateofbirth': user[0].get('dateofbirth')}
     return render(request,'userprofile.html', userdetails)
 
+def AboutUs(request):
+  
+    return render(request,'AboutUs.html')
+
 # def home(request):
 #     return render(request,'home.html')
 
