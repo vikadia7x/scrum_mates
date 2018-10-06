@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{%block content%}
+<div>
+<a href="{% url 'login' %}">login</a>
+<a href="{% url 'signup' %}">signup</a>
+<p><a href="{% url 'AboutUs' %}">AboutUs</a></p>
+<h2 align="center">This site helps you to find your favourite movies near you!!!</h2>
+<h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
+
+<h4 align="center">Enter the Zip Code</h4>
+
+<style>
+    form {
+    width:50%;
+    height:100px;
+    margin:auto;
+    position:relative;
+    }
+      input {
+    width:100%;
+    height: 25px;
+    position:relative;
+      }
+    </style>
+
+<form method='post' align = "center">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Theatre Name</th>
+            <th>Address</th>
+            <th>Contact Information</th>
+            <th>Movie Poster</th>
+            <th>Movie Name</th>
+            <th>Movie Duration</th>
+            <th>Movie Rating</th>
+            <th>Movie Showtime</th>
+            <th>Movie Showdate</th>
+          </tr>
+
+          {% for movielisttype in movielist|slice:":1" %}
+            {% for movielistall in movielisttype|slice:":5" %}
+            <tr>
+
+              {% for movieinfo in movielistall|slice:"3:" %}
+
+              <td>{{ movielistall.0 }}</td>
+
+              <td>{{ movielistall.1 }}</td>
+
+              <td>{{ movielistall.2 }}</td>
+
+              <td><img src = "{{ movieinfo.1 }}"></td>
+
+              <td>{{ movieinfo.0 }}</td>
+
+              <td>{{ movieinfo.2 }}</td>
+
+              <td>{{ movieinfo.3 }}</td>
+
+              <td>{{ movieinfo.4 }}</td>
+
+              <td>{{ movieinfo.5 }}</td>
+            </tr>
+            {% endfor %}
+
+            {% endfor %}
+          {% endfor %}
+    </table>
+  </div>
+{% endblock %}
