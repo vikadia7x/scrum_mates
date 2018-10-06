@@ -1,0 +1,93 @@
+
+
+<link rel="shortcut icon" href="poster/logo1.png" />
+<title>Movie SHowtime Finder</title>
+
+* {
+	font-family: 'Roboto', sans-serif;
+  background-color: teal;
+  color: white;
+}
+
+#header{
+
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	height: 25%;
+
+	background-color: $main-color;
+	/*background-color: #f1f1f1;*/
+	/* Full height*/
+}
+#header1{
+
+
+	display: inline-block;
+	width: auto;
+	height: auto;
+	align-self: center;
+	background-color: $main-color;
+/*  background-color: #f1f1f1;*/
+	/* Full height*/
+}
+.menu {
+	display: inline-block;
+	float: right;
+	margin: 2px;
+	padding: 1px;
+	width: 400px;
+	/*background-color: #f1f1f1;*/
+	height: 100px; /* Full height */
+
+}
+ul {
+	position: relative;
+top: 60px;
+right: 40px;
+
+	list-style-type: none;
+	float: right;
+			margin: 0;
+			padding: 0;
+			width: 25%;
+			/*background-color: #f1f1f1;*/
+			height: 50px; /* Full height */
+			position: fixed; /* Make it stick, even on scroll */
+			overflow: auto; /* Enable scrolling if the sidenav has too much content */
+
+/*  list-style-type: none;
+margin: 0;
+padding: 0;
+width: 200px;
+background-color: #f1f1f1;
+border: 1px solid #555;*/
+}
+li {
+float: right;
+}
+
+a {
+display: block;
+padding: 2px;
+background-color: #dddddd;
+}
+
+li a {
+
+display: inline-block;
+color: #000;
+padding: 8px 16px;
+text-decoration: none;
+text-align: center;
+border-bottom: 1px solid #555;
+}
+li:last-child {
+border-bottom: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+background-color: #555;
+color: white;
+}
