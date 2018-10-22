@@ -12,8 +12,7 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
     dateofbirth = forms.DateField(input_formats=['%Y-%m-%d'], required=True)
     zipcode = forms.CharField()
-    username1 = forms.CharField()
 
     class Meta:
         model = User
-        fields = ('username', 'username1','first_name', 'last_name', 'email','dateofbirth','zipcode','password1', 'password2', )
+        fields = ('username','first_name','last_name','email','dateofbirth','zipcode','password1', 'password2', )
