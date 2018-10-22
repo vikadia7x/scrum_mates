@@ -77,28 +77,6 @@ LOGOUT_REDIRECT_URL = 'landing'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-# DATABASES = {
-#      'default': {
-#          'ENGINE': 'sql_server.pyodbc',
-#          'NAME': 'showtimefinder_db',
-#          'USER': 'user@scrum_mates',
-#          'PASSWORD': 'Azure@Cloud',
-#          'HOST': 'showtimefinder.database.windows.net',
-#          'PORT': '1433',
-#          'OPTIONS': {
-#              'host_is_server': True,
-#              'driver': 'FreeTDS',
-#          }
-#      }
-#  }
-
 DATABASES = {  
     'default': {
         'ENGINE': 'sql_server.pyodbc',
@@ -113,7 +91,6 @@ DATABASES = {
         }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -156,13 +133,3 @@ STATIC_URL = '/static/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
-
-
-
-# EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'icorpsdev@gmail.com'
-# EMAIL_HOST_PASSWORD = 'Nomanali7972'
