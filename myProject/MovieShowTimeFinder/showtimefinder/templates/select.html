@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}MovieGenre{% endblock %}
+
+{% block content %}
+<h2>MovieGenre</h2>
+<form method="post">
+  {% csrf_token %}
+  {{form}}
+  <!-- {% for genre in movie%}
+  <input type="checkbox" name={{genre}}>{{ genre }}<br>
+  {% endfor %} -->
+  <button type="submit">Next</button>
+</form>
+{% endblock %}
+
+

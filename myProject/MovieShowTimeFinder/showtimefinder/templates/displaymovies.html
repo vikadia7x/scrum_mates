@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}SelectMovieHere{% endblock %}
+
+{% block content %}
+<h2>SelectMovieHere</h2>
+<form method="post">
+  {% csrf_token %}
+  <br>
+  {% for l in list_genre %}
+    <input type="checkbox" name="check" value="{{l.id}}"> {{l.title}} <br>
+  {% endfor %}
+  <button type="submit">Next</button>
+</form>
+{% endblock %}
+
+
