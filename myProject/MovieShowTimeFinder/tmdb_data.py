@@ -32,11 +32,11 @@ import csv # to create a csv file
 import requests # to get info from api
 import sys # for exit
 import time # to prevent exceeding api limit
-api_key = 'ce4ca93f8fa013d449e34523c2aff0bb'
 
+api_key = 'ce4ca93f8fa013d449e34523c2aff0bb'
 try:
     # Get all movies currently in theatres in the US according to TMDB
-    csvwriter = csv.writer(open("Now_Playing_Movies_Data.csv", "w+")) # write
+    csvwriter = csv.writer(open("Now_Playing_Movies_Data.csv", "w+")) # write & make it
     # Headers for the column
     csvwriter.writerow(["adult", "belongs_to_collection", "budget", "genres", "homepage", "id", "imdb_id", "original_language", "original_title", "overview",	"popularity", "poster_path",
                           "production_companies", "production_countries", "release_date", "revenue", "runtime",	"spoken_languages", "status", "tagline", "title", "video", "vote_average",	
@@ -47,7 +47,6 @@ try:
 
     # Get number of pages to request:
     pages = jsonObj['total_pages']
-    print(pages)
     counter = 1
     while(counter <= pages):
         if(counter > 1):
