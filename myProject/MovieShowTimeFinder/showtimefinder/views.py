@@ -2,6 +2,14 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
 from showtimefinder.forms import SignUpForm, LoginForm
 from showtimefinder.forms import SearchForm, MovieSelection
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
+from .tokens import account_activation_token
+from django.core.mail import EmailMessage
+from django.core.mail import send_mail
+from django.conf import settings
 from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies
 from showtimefinder.models import User
 from django.db.models import Q
@@ -12,24 +20,49 @@ import re , json, csv
 import geocoder
 import socket
 import requests
-from urlparams.redirect import param_redirect
+from django.core import serializers
 
-# Create your views here.
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            user.userprofile.dateofbirth = form.cleaned_data['dateofbirth']
-            user.userprofile.zipcode = form.cleaned_data['zipcode']
+            user = form.save(commit=False)
+            user.is_active = False
             user.save()
+
+            user.userprofile.dateofbirth = form.cleaned_data.get('dateofbirth')
+            user.userprofile.zipcode = form.cleaned_data.get('zipcode')
+            user.save()
+
+            current_site = get_current_site(request)
+            subject = 'Activate Your MySite Account'
+            message = render_to_string('account_activation_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            'token': account_activation_token.make_token(user),
+            })
+            user.email_user(subject, message)
             return redirect('landing.html')
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+        return render(request, 'signup.html', {'form': form})
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.userprofile.email_confirmed = True
+        user.save()
+        login(request, user)
+        return HttpResponse('Account activated successfully')
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 def login_page(request):
     if request.method == 'POST':
@@ -44,7 +77,7 @@ def login_page(request):
                 isFirstLogin = userp[0].get('isFirstLogin')
                 if(isFirstLogin):
                     user.userprofile.isFirstLogin = 0
-                    user.save() 
+                    user.save()
                     return redirect('select.html')
                 else:
                     return redirect('home.html')
@@ -52,7 +85,7 @@ def login_page(request):
                 return render(request, 'login.html', {'form': form})
         else:
             return render(request, 'login.html', {'form': form})
-    else: 
+    else:
         form = LoginForm()
         context = {'form': form}
         return render(request, 'login.html', context)
@@ -169,15 +202,15 @@ def select(request):
         listmovie_Animation = MovieGenreSelection.objects.filter(Animation = None).values()
         if(Animation==1):
             listmovie_Animation = MovieGenreSelection.objects.filter(Animation = genre_list['Animation']).values()
-        
+
         listmovie_Comedy = MovieGenreSelection.objects.filter(Comedy = None).values()
         if(Comedy==1):
             listmovie_Comedy = MovieGenreSelection.objects.filter(Comedy = genre_list['Comedy']).values()
-        
+
         listmovie_Crime = MovieGenreSelection.objects.filter(Crime = None).values()
         if(Crime==1):
             listmovie_Crime = MovieGenreSelection.objects.filter(Crime = genre_list['Crime']).values()
-        
+
         listmovie_Documentary = MovieGenreSelection.objects.filter(Documentary = None).values()
         if(Documentary==1):
             listmovie_Documentary = MovieGenreSelection.objects.filter(Documentary = genre_list['Documentary']).values()
@@ -185,15 +218,15 @@ def select(request):
         listmovie_Drama = MovieGenreSelection.objects.filter(Drama = None).values()
         if(Drama==1):
             listmovie_Drama = MovieGenreSelection.objects.filter(Drama = genre_list['Drama']).values()
-        
+
         listmovie_Fantasy = MovieGenreSelection.objects.filter(Fantasy = None).values()
         if(Fantasy==1):
             listmovie_Fantasy = MovieGenreSelection.objects.filter(Fantasy = genre_list['Fantasy']).values()
 
         listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
         if(Family==1):
-            listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()        
-        
+            listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
+
         listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
         if(History==1):
             listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
@@ -201,7 +234,7 @@ def select(request):
         listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
         if(Music==1):
             listmovie_Music = MovieGenreSelection.objects.filter(Music = genre_list['Music']).values()
-        
+
         listmovie_Mystery = MovieGenreSelection.objects.filter(Mystery = None).values()
         if(Mystery==1):
             listmovie_Mystery = MovieGenreSelection.objects.filter(Mystery = genre_list['Mystery']).values()
@@ -225,12 +258,12 @@ def select(request):
         listmovie_Western = MovieGenreSelection.objects.filter(Western = None).values()
         if(Western==1):
             listmovie_Western = MovieGenreSelection.objects.filter(Western = genre_list['Western']).values()
-        
+
         listmovie_War = MovieGenreSelection.objects.filter(War = None).values()
         if(War==1):
             listmovie_War = MovieGenreSelection.objects.filter(War = genre_list['War']).values()
 
-        listmovie = (listmovie_Action 
+        listmovie = (listmovie_Action
         | listmovie_Adventure
         | listmovie_Animation
         | listmovie_Comedy
@@ -249,10 +282,10 @@ def select(request):
         | listmovie_Western
         | listmovie_War
         ).distinct().order_by('popularity').reverse()
-        
+
         list_genre = list(listmovie)
         list_genre = list_genre[:10]
-        
+
         request.session['list_genre'] = list_genre
         return redirect('displaymovies.html')
     else:
@@ -269,7 +302,7 @@ def displaymovies(request):
     else:
         list_genre = request.session.get('list_genre')
         return render(request, 'displaymovies.html',{'list_genre':list_genre})
-    
+
 
 def landing(request):
     if(request.method == 'POST'):
