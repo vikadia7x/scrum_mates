@@ -1,0 +1,26 @@
+language: python
+
+python:
+  - "3.6"
+  - "3.7"
+# service:
+
+env:
+  - DJANGO_VERSION=2.1.2 
+
+install:
+  - pip install -q Django==DJANGO_VERSION
+  - python setup.py -q install
+
+script:
+  - python manage.py runserver
+ # - pytest
+
+#deploy:
+ # provider: azure_web_apps
+ # on:
+ #   all_branches: true
+ # username: 'scrum_mates@showtimefinder'       # If AZURE_WA_USERNAME isn't set
+ # password: 'Azure@Cloud'  # If AZURE_WA_PASSWORD isn't set
+ # site: 'showtimefinder.database.windows.net'      # If AZURE_WA_SITE isn't set
+
