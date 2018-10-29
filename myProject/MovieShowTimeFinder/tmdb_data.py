@@ -31,6 +31,7 @@ i.      adult (bool);
 import csv # to create a csv file
 import requests # to get info from api
 import sys # for exit
+import time # to prevent exceeding api limit
 api_key = 'ce4ca93f8fa013d449e34523c2aff0bb'
 
 try:
@@ -46,16 +47,18 @@ try:
 
     # Get number of pages to request:
     pages = jsonObj['total_pages']
+    print(pages)
     counter = 1
     while(counter <= pages):
         if(counter > 1):
             url = "https://api.themoviedb.org/3/movie/now_playing?api_key=" + api_key + "&language=en-US&page=" + str(counter)+"&region=US"
             res = requests.get(url)
             jsonObj = res.json()
-        
+        if(counter%2 != 0):
+            print("Delay hit")
+            time.sleep(10) # sleep for 10 seconds if the page is an even number
 
         for results in jsonObj['results']:
-          
             url2 = "https://api.themoviedb.org/3/movie/"+str(results['id'])+ "?api_key=" + api_key + "&language=en-US"
             res2 = requests.get(url2)
             jsonObj2 = res2.json()
@@ -66,7 +69,6 @@ try:
             
         print("finished :)")
         counter += 1
-        break
 
 except requests.exceptions.HTTPError as err:
     print(err)
