@@ -1,15 +1,18 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
-from showtimefinder.forms import SignUpForm
-from showtimefinder.forms import SearchForm
-from showtimefinder.models import UserProfile
+from showtimefinder.forms import SignUpForm, LoginForm
+from showtimefinder.forms import SearchForm, MovieSelection
+from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies
 from showtimefinder.models import User
+from django.db.models import Q
 from bs4 import BeautifulSoup
 from django.http import HttpRequest
 from requests import get
-import re
+import re , json, csv
 import geocoder
 import socket
+import requests
+from urlparams.redirect import param_redirect
 
 # Create your views here.
 def signup(request):
@@ -27,6 +30,246 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+def login_page(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                userp = UserProfile.objects.filter(user_id = user.id).values()
+                isFirstLogin = userp[0].get('isFirstLogin')
+                if(isFirstLogin):
+                    user.userprofile.isFirstLogin = 0
+                    user.save() 
+                    return redirect('select.html')
+                else:
+                    return redirect('home.html')
+            else:
+                return render(request, 'login.html', {'form': form})
+        else:
+            return render(request, 'login.html', {'form': form})
+    else: 
+        form = LoginForm()
+        context = {'form': form}
+        return render(request, 'login.html', context)
+
+def select(request):
+    if request.method == 'POST':
+        form = MovieSelection(request.POST)
+        if form.is_valid():
+            genre_list ={}
+            Action = form.cleaned_data.get('Action')
+            if (Action==1):
+                genre_list['Action'] = Action
+            else:
+                genre_list['Action'] = 0
+            Adventure = form.cleaned_data.get('Adventure')
+            if (Adventure==1):
+                genre_list['Adventure'] = Adventure
+            else:
+                genre_list['Adventure'] = 0
+            Animation = form.cleaned_data.get('Animation')
+            if (Animation==1):
+                genre_list['Animation'] = Animation
+            else:
+                genre_list['Animation'] = 0
+            Comedy = form.cleaned_data.get('Comedy')
+            if (Comedy==1):
+                genre_list['Comedy'] = Comedy
+            else:
+                genre_list['Comedy'] = 0
+            Crime = form.cleaned_data.get('Crime')
+            if (Crime==1):
+                genre_list['Crime'] = Crime
+            else:
+                genre_list['Crime'] = 0
+            Documentary = form.cleaned_data.get('Documentary')
+            if (Documentary==1):
+                genre_list['Documentary'] = Documentary
+            else:
+                genre_list['Documentary'] = 0
+            Drama = form.cleaned_data.get('Drama')
+            if (Drama==1):
+                genre_list['Drama'] = Drama
+            else:
+                genre_list['Drama'] = 0
+            Family = form.cleaned_data.get('Family')
+            if (Family==1):
+                genre_list['Family'] = Family
+            else:
+                genre_list['Family'] = 0
+            Fantasy = form.cleaned_data.get('Fantasy')
+            if (Fantasy==1):
+                genre_list['Fantasy'] = Fantasy
+            else:
+                genre_list['Fantasy'] = 0
+            History = form.cleaned_data.get('History')
+            if (History==1):
+                genre_list['History'] = History
+            else:
+                genre_list['History'] = 0
+            Horror = form.cleaned_data.get('Horror')
+            if (Horror==1):
+                genre_list['Horror'] = Horror
+            else:
+                genre_list['Horror'] = 0
+            Music = form.cleaned_data.get('Music')
+            if (Music==1):
+                genre_list['Music'] = Music
+            else:
+                genre_list['Music'] = 0
+            Mystery = form.cleaned_data.get('Mystery')
+            if (Mystery==1):
+                genre_list['Mystery'] = Mystery
+            else:
+                genre_list['Mystery'] = 0
+            Romance = form.cleaned_data.get('Romance')
+            if (Romance==1):
+                genre_list['Romance'] = Romance
+            else:
+                genre_list['Romance'] = 0
+            Science = form.cleaned_data.get('Science')
+            if (Science==1):
+                genre_list['Science'] = Science
+            else:
+                genre_list['Science'] = 0
+            TV = form.cleaned_data.get('TV')
+            if (TV==1):
+                genre_list['TV'] = TV
+            else:
+                genre_list['TV'] = 0
+            Thriller = form.cleaned_data.get('Thriller')
+            if (Thriller==1):
+                genre_list['Thriller'] = Thriller
+            else:
+                genre_list['Thriller'] = 0
+            War = form.cleaned_data.get('War')
+            if (War==1):
+                genre_list['War'] = War
+            else:
+                genre_list['War'] = 0
+            Western = form.cleaned_data.get('Western')
+            if (Western==1):
+                genre_list['Western'] = Western
+            else:
+                genre_list['Western'] = 0
+
+        listmovie_Action = MovieGenreSelection.objects.filter(Action = None).values()
+        if(Action==1):
+            listmovie_Action = MovieGenreSelection.objects.filter(Action = genre_list['Action']).values()
+
+        listmovie_Adventure = MovieGenreSelection.objects.filter(Adventure = None).values()
+        if(Adventure==1):
+            listmovie_Adventure = MovieGenreSelection.objects.filter(Adventure = genre_list['Adventure']).values()
+
+        listmovie_Animation = MovieGenreSelection.objects.filter(Animation = None).values()
+        if(Animation==1):
+            listmovie_Animation = MovieGenreSelection.objects.filter(Animation = genre_list['Animation']).values()
+        
+        listmovie_Comedy = MovieGenreSelection.objects.filter(Comedy = None).values()
+        if(Comedy==1):
+            listmovie_Comedy = MovieGenreSelection.objects.filter(Comedy = genre_list['Comedy']).values()
+        
+        listmovie_Crime = MovieGenreSelection.objects.filter(Crime = None).values()
+        if(Crime==1):
+            listmovie_Crime = MovieGenreSelection.objects.filter(Crime = genre_list['Crime']).values()
+        
+        listmovie_Documentary = MovieGenreSelection.objects.filter(Documentary = None).values()
+        if(Documentary==1):
+            listmovie_Documentary = MovieGenreSelection.objects.filter(Documentary = genre_list['Documentary']).values()
+
+        listmovie_Drama = MovieGenreSelection.objects.filter(Drama = None).values()
+        if(Drama==1):
+            listmovie_Drama = MovieGenreSelection.objects.filter(Drama = genre_list['Drama']).values()
+        
+        listmovie_Fantasy = MovieGenreSelection.objects.filter(Fantasy = None).values()
+        if(Fantasy==1):
+            listmovie_Fantasy = MovieGenreSelection.objects.filter(Fantasy = genre_list['Fantasy']).values()
+
+        listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
+        if(Family==1):
+            listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()        
+        
+        listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
+        if(History==1):
+            listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
+
+        listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
+        if(Music==1):
+            listmovie_Music = MovieGenreSelection.objects.filter(Music = genre_list['Music']).values()
+        
+        listmovie_Mystery = MovieGenreSelection.objects.filter(Mystery = None).values()
+        if(Mystery==1):
+            listmovie_Mystery = MovieGenreSelection.objects.filter(Mystery = genre_list['Mystery']).values()
+
+        listmovie_Romance = MovieGenreSelection.objects.filter(Romance = None).values()
+        if(Romance==1):
+            listmovie_Romance = MovieGenreSelection.objects.filter(Romance = genre_list['Romance']).values()
+
+        listmovie_Science = MovieGenreSelection.objects.filter(Science = None).values()
+        if(Science==1):
+            listmovie_Science = MovieGenreSelection.objects.filter(Science = genre_list['Science']).values()
+
+        listmovie_TV = MovieGenreSelection.objects.filter(TV = None).values()
+        if(TV==1):
+            listmovie_TV = MovieGenreSelection.objects.filter(TV = genre_list['TV']).values()
+
+        listmovie_Thriller = MovieGenreSelection.objects.filter(Thriller = None).values()
+        if(Thriller==1):
+            listmovie_Thriller = MovieGenreSelection.objects.filter(Thriller = genre_list['Thriller']).values()
+
+        listmovie_Western = MovieGenreSelection.objects.filter(Western = None).values()
+        if(Western==1):
+            listmovie_Western = MovieGenreSelection.objects.filter(Western = genre_list['Western']).values()
+        
+        listmovie_War = MovieGenreSelection.objects.filter(War = None).values()
+        if(War==1):
+            listmovie_War = MovieGenreSelection.objects.filter(War = genre_list['War']).values()
+
+        listmovie = (listmovie_Action 
+        | listmovie_Adventure
+        | listmovie_Animation
+        | listmovie_Comedy
+        | listmovie_Crime
+        | listmovie_Drama
+        | listmovie_Documentary
+        | listmovie_Family
+        | listmovie_Fantasy
+        | listmovie_History
+        | listmovie_Music
+        | listmovie_Mystery
+        | listmovie_Romance
+        | listmovie_Science
+        | listmovie_TV
+        | listmovie_Thriller
+        | listmovie_Western
+        | listmovie_War
+        ).distinct().order_by('popularity').reverse()
+        
+        list_genre = list(listmovie)
+        list_genre = list_genre[:10]
+        
+        request.session['list_genre'] = list_genre
+        return redirect('displaymovies.html')
+    else:
+        form = MovieSelection()
+        return render(request, 'select.html', {'form':form})
+
+def displaymovies(request):
+    if request.method == 'POST':
+        userselectmovieslist = request.POST.getlist("check")
+        for movies in userselectmovieslist:
+            uSelect = UserSelectMovies(userId=request.user,movieId = movies)
+            uSelect.save()
+        return redirect('home.html')
+    else:
+        list_genre = request.session.get('list_genre')
+        return render(request, 'displaymovies.html',{'list_genre':list_genre})
+    
 
 def landing(request):
     if(request.method == 'POST'):
