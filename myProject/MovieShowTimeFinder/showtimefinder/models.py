@@ -6,6 +6,7 @@ from django.dispatch import receiver
 # Create your models here.
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='userprofile')
+    email_confirmed = models.BooleanField(default=False)
     dateofbirth = models.DateField(blank=False, default = '1992-01-01')
     zipcode = models.TextField(blank=True)
     isFirstLogin = models.BooleanField(default=1)

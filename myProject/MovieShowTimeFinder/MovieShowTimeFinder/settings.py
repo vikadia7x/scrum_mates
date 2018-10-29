@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'urlparams'
-    
+    # 'urlparams'
+
 ]
 
 MIDDLEWARE = [
@@ -78,7 +78,7 @@ LOGOUT_REDIRECT_URL = 'landing'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {  
+DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'showtimefinder_db',
@@ -131,6 +131,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'testdjango717@gmail.com'
+EMAIL_HOST_PASSWORD = 'Samali717'
