@@ -21,27 +21,6 @@ import geocoder
 import socket
 import requests
 from django.core import serializers
-# from urlparams.redirect import param_redirect
-
-# Create your views here.
-# def signup(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             username = form.cleaned_data.get('username')
-#             raw_password = form.cleaned_data.get('password1')
-#             user = authenticate(username=username, password=raw_password)
-#             user.userprofile.dateofbirth = form.cleaned_data['dateofbirth']
-#             user.userprofile.zipcode = form.cleaned_data['zipcode']
-#             user.save()
-#             return redirect('landing.html')
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'signup.html', {'form': form})
-
-
-
 
 def signup(request):
     if request.method == 'POST':
@@ -50,19 +29,11 @@ def signup(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            # Email Verification
+
             user.userprofile.dateofbirth = form.cleaned_data.get('dateofbirth')
             user.userprofile.zipcode = form.cleaned_data.get('zipcode')
-            print(user.userprofile.dateofbirth)
             user.save()
-            #Ends
-            # username = form.cleaned_data.get('username')
-            # raw_password = form.cleaned_data.get('password1')
-            # user = authenticate(username=username, password=raw_password)
-            # user.userprofile.dateofbirth = form.cleaned_data['dateofbirth']
-            # user.userprofile.zipcode = form.cleaned_data['zipcode']
-            # user.save()
-            # Sami Email Verification code start
+
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
             message = render_to_string('account_activation_email.html', {
@@ -72,7 +43,6 @@ def signup(request):
             'token': account_activation_token.make_token(user),
             })
             user.email_user(subject, message)
-            # Sami Email Verification Ends
             return redirect('landing.html')
     else:
         form = SignUpForm()

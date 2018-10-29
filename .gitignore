@@ -3,3 +3,4 @@ venv/
 myProject/MovieShowTimeFinder/showtimefinder/__pycache__/
 MovieShowTimeFinder/showtimefinder/__pycache__/
 MovieShowTimeFinder/db.sqlite3
+MovieShowTimeFinder/__pycache__/
