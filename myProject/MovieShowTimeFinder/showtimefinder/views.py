@@ -4,12 +4,14 @@ from showtimefinder.forms import SignUpForm, LoginForm
 from showtimefinder.forms import SearchForm, MovieSelection
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from django.shortcuts import render_to_response
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import messages
 from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies
 from showtimefinder.models import User
 from django.db.models import Q
@@ -70,6 +72,7 @@ def login_page(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            # password = forms.CharField(max_length=32, widget=forms.PasswordInput)
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -82,6 +85,7 @@ def login_page(request):
                 else:
                     return redirect('home.html')
             else:
+                messages.error(request,'username or password not correct')
                 return render(request, 'login.html', {'form': form})
         else:
             return render(request, 'login.html', {'form': form})
