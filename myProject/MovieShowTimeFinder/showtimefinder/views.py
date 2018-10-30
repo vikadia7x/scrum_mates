@@ -352,7 +352,17 @@ def edit_profile(request):
         form = EditProfileForm(request.POST, instance=request.user)
 
         if form.is_valid():
-            form.save()
+            user = form.save()
+            current_site = get_current_site(request)
+            subject = 'Your details are Updated'
+            message = render_to_string('UserEdit_email.html')
+            # , {
+            # 'user': user,
+            # 'domain': current_site.domain,
+            # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            # 'token': account_activation_token.make_token(user),
+            # })
+            user.email_user(subject, message)
             return redirect(reverse('userprofile'))
     else:
         form = EditProfileForm(instance=request.user)
