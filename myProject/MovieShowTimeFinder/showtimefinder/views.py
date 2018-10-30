@@ -353,7 +353,7 @@ def edit_profile(request):
 
         if form.is_valid():
             form.save()
-            return redirect(reverse('userprofile'))
+            return redirect(reverse('userprofile.html'))
     else:
         form = EditProfileForm(instance=request.user)
         args = {'form': form}
