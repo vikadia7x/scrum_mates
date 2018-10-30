@@ -14,33 +14,6 @@ from surprise import Reader, Dataset, SVD, evaluate
 import warnings; warnings.simplefilter('ignore')
 import pyodbc
 
-"""
-server = 'showtimefinder.database.windows.net'
-database = 'showtimefinder_db'
-username = 'scrum_mates@showtimefinder'
-password = 'Azure@Cloud'
-driver='/usr/local/lib/libmsodbcsql.13.dylib'
-cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
-cursor = cnxn.cursor()
-"""
-
-"""
-query_meta = "SELECT TOP 10 * FROM [dbo].[metaDataPreprocessed]"
-metaData = pd.read_sql(query_meta, cnxn)
-
-query_credits = "SELECT TOP 10 * FROM [dbo].[credits]"
-credits = pd.read_sql(query_credits, cnxn)
-
-query_keywords = "SELECT TOP 10 * FROM [dbo].[keywords]"
-keywords = pd.read_sql(query_keywords, cnxn)
-
-query_links = "SELECT TOP 10 * FROM [dbo].[links]"
-links = pd.read_sql(query_links, cnxn)
-
-query_ratings = "SELECT TOP 10 * FROM [dbo].[ratings]"
-ratings = pd.read_sql(query_ratings, cnxn)
-"""
-
 def get_director(x):
     for i in x:
         if i['job'] == 'Director':
@@ -77,12 +50,10 @@ def preProcess(credits,keywords,links,metaData,ratings):
     metaDataLinks['cast'] = metaDataLinks['cast'].apply(lambda x: x[:3] if len(x) >=3 else x)
     metaDataLinks['director'] = metaDataLinks['director'].astype('str').apply(lambda x: str.lower(x.replace(" ", "")))
     metaDataLinks['director'] = metaDataLinks['director'].apply(lambda x: [x,x, x])
-    print("Breakpoint")
     #s = metaDataLinks.apply(lambda x: pd.Series(x['keywords']),axis=1).stack().reset_index(level=1, drop=True)
     #s = s.value_counts()
     #s = s[s > 1]
     stemmer = SnowballStemmer('english')
-    print("Breakpoint 2")
     metaDataLinks['keywords'] = metaDataLinks['keywords'].apply(lambda x: [i['name'] for i in x] if isinstance(x, list) else [])
     #metaDataLinks['keywords'] = metaDataLinks['keywords'].apply(filter_keywords)
     metaDataLinks['keywords'] = metaDataLinks['keywords'].apply(lambda x: [stemmer.stem(i) for i in x])
@@ -127,16 +98,12 @@ def get_recommendations(title, indices, cosine_sim, metaDataLinks):
 def flow():
     recommendation = pd.DataFrame()
     metaDataLinks = preProcess(credits,keywords,links,metaData,ratings)
-    print("2")
     cosine_sim = filtering(metaDataLinks)
-    print("3")
     indices = process_Output(metaDataLinks)
-    print("4")
     movie_titles = ['The Dark Knight','Inception','Pulp Fiction','Interstellar','Marley & Me']
     for movie in movie_titles:
         df = get_recommendations(movie, indices, cosine_sim, metaDataLinks).head(10)
         recommendation = recommendation.append(df)
-    print(recommendation)
 
 if __name__ == '__main__':  
     credits = pd.read_csv('test_data/credits.csv')
@@ -145,5 +112,4 @@ if __name__ == '__main__':
     metaData = pd.read_csv('test_data/metaDataPreprocessed.csv')
     ratings = pd.read_csv('test_data/ratings_small.csv')
 
-    print("1")
     flow()
