@@ -6,12 +6,20 @@
 
 {% block content %}
 <h2>Login Here</h2>
+
+<!-- {% if invalid %}
+    Your email/password combo doesn't exist.
+
+{% endif %} -->
+
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Login</button>
 
 </form>
+
+{% for message in messages %} {{ message }} {% endfor %}
+
+<p><a href="{% url 'password_reset' %}">Forgot Password</a></p>
     {% endblock %}
-
-
