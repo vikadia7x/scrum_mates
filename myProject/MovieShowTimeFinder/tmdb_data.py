@@ -47,15 +47,14 @@ def upload_data(server, user, password, dbname):
     cursor = cxn.cursor()
 
     # create a table
-    cr_table = '''CREATE TABLE NowPlayingData("adult VARCHAR(6)", "belong_to_collection VARCHAR(255)", "budget MONEY", "genres VARCHAR(255)", "homepage VARCHAR(255)", "id INT", "imdb_id INT", 
-                "original_language CHAR(2)", "original_title VARCHAR(255)", "overview VARCHAR(500)","popularity FLOAT","poster_path VARCHAR(255)", "production_companies VARCHAR(500)", 
-                "production_countries VARCHAR(500)", "release_date DATE", "revenue MONEY", "runtime INT", "spoken_languages VARCHAR(255)","status VARCHAR(8)", "tagline VARCHAR(255)", 
-                "title VARCHAR(255)","video VARCHAR(255)", "vote_average FLOAT","vote_count INT");'''
+    cr_table = '''CREATE TABLE NowPlayingData(adult VARCHAR(6), belong_to_collection VARCHAR(255), budget MONEY, genres VARCHAR(255), homepage VARCHAR(255), id INT PRIMARY KEY, imdb_id INT, 
+                original_language CHAR(2), original_title VARCHAR(255), overview VARCHAR(500),popularity FLOAT,poster_path VARCHAR(255), production_companies VARCHAR(500), 
+                production_countries VARCHAR(500), release_date DATE, revenue MONEY, runtime INT, spoken_languages VARCHAR(255),status VARCHAR(8), tagline VARCHAR(255), 
+                title VARCHAR(255),video VARCHAR(255), vote_average FLOAT,vote_count INT);'''
     cursor.execute(cr_table)
-
     # Open the resultant csv file and execute internal code
     # code taken with help from : https://stackoverflow.com/questions/17281335/python-converting-csv-file-to-sql-table
-    with open("Now_Playing_Movies_Data.csv", "r") as csvreader:
+    with open("Now_Playing_Movies_Data.csv", "r+") as csvreader:
         read = csv.reader(csvreader)
         obj = ({"adult": col[0], "belong_to_collection": col[1], "budget": col[2], "genres" : col[3], "homepage": col[4], "id": col[5], "imdb_id": col[6], "original_language": col[7], 
                 "original_title": col[8], "overview": col[9],"popularity": col[10],"poster_path": col[11], "production_companies": col[12], "production_countries": col[13], "release_date": col[14],
@@ -73,7 +72,7 @@ def upload_data(server, user, password, dbname):
     return str
 
 try:
-    '''
+    
     # Get all movies currently in theatres in the US according to TMDB
     csvwriter = csv.writer(open("Now_Playing_Movies_Data.csv", "w+")) # write & make it
     # Headers for the column
@@ -107,11 +106,10 @@ try:
             
         print("finished :)")
         counter += 1
-    '''
+    
     print(upload_data(server, user, password, dbname))
 
 except requests.exceptions.HTTPError as err:
     print(err)
     sys.exit(1)
 
-#
