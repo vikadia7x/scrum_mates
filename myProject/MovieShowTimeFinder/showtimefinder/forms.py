@@ -19,7 +19,7 @@ class SignUpForm(UserCreationForm):
 
 class LoginForm(forms.Form):
     username = forms.CharField()
-    password = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
 
 class MovieSelection(forms.Form):
     Action = forms.BooleanField(required=False)
