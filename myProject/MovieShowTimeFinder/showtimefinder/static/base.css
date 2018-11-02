@@ -169,5 +169,10 @@ body{
     margin-right:10px
 }
 
+span{
+    display: none;
+}
 
-
+/* #id_password{
+    display: none;
+} */
