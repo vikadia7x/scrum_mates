@@ -24,6 +24,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.landing, name='landing'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login.html', views.login_page, name='login_page'),
     path('select.html', views.select, name='select'),
