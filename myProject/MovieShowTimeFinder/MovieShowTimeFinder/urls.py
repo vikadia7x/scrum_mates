@@ -23,6 +23,7 @@ from django.conf.urls import url
 
 
 urlpatterns = [
+    path('',views.landing,name='landing'),
     path('admin/', admin.site.urls),
     path('', views.landing, name='landing'),
     path('accounts/', include('django.contrib.auth.urls')),
