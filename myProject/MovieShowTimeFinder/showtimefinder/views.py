@@ -85,7 +85,7 @@ def login_page(request):
                 else:
                     return redirect('home.html')
             else:
-                messages.error(request,'username or password not correct')
+                messages.error(request,'Username or Password is incorrect. Please try again!')
                 return render(request, 'login.html', {'form': form})
         else:
             return render(request, 'login.html', {'form': form})
@@ -288,7 +288,7 @@ def select(request):
         ).distinct().order_by('popularity').reverse()
 
         list_genre = list(listmovie)
-        list_genre = list_genre[:10]
+        list_genre = list_genre[:20]
 
         request.session['list_genre'] = list_genre
         return redirect('displaymovies.html')
@@ -299,6 +299,7 @@ def select(request):
 def displaymovies(request):
     if request.method == 'POST':
         userselectmovieslist = request.POST.getlist("check")
+        print(userselectmovieslist)
         for movies in userselectmovieslist:
             uSelect = UserSelectMovies(userId=request.user,movieId = movies)
             uSelect.save()
@@ -309,6 +310,7 @@ def displaymovies(request):
 
 
 def landing(request):
+    #request.session.clear()
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
         if form.is_valid():
@@ -317,7 +319,6 @@ def landing(request):
         url = 'https://www.imdb.com/showtimes/US/{}'
         response = get(url.format(text))
         movielist = scrapeData(response)
-
         args = {
             'text': text,
             'form': form,

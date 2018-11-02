@@ -3,15 +3,20 @@
 {% block title %}SelectMovieHere{% endblock %}
 
 {% block content %}
-<h2>SelectMovieHere</h2>
+<div class="container-title">
+    <div class="center-genre">
+<h3>Select Movies of your choice</h3>
 <form method="post">
   {% csrf_token %}
   <br>
   {% for l in list_genre %}
-    <input type="checkbox" name="check" value="{{l.id}}"> {{l.title}} <br>
+    <p><input type="checkbox" name = "check" id="check" value="{{l.id}}"><b>{{l.title}}</b> </p>
   {% endfor %}
-  <button type="submit">Next</button>
+  <button type="submit" class="btn btn-info btn-default">Next</button>
 </form>
+<br>
+</div>
+</div>
 {% endblock %}
 
 

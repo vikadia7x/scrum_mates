@@ -5,21 +5,21 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<div class="container">
+<br>
+<div class="center1">
 <h2>Login Here</h2>
-
-<!-- {% if invalid %}
-    Your email/password combo doesn't exist.
-
-{% endif %} -->
-
+{% for message in messages %} 
+<p style="color: crimson">{{ message }} </p>
+{% endfor %}
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Login</button>
-
+  <button type="submit" class="btn btn-info btn-default">Login Here</button>
+<a href="{% url 'password_reset' %}">Forgot Password ?</a>
 </form>
-
-{% for message in messages %} {{ message }} {% endfor %}
-
-<p><a href="{% url 'password_reset' %}">Forgot Password</a></p>
-    {% endblock %}
+<br>
+<br>
+</div>
+</div> 
+{% endblock %}
