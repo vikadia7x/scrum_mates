@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
 
@@ -41,3 +41,15 @@ class MovieSelection(forms.Form):
     Thriller = forms.BooleanField(label_suffix='',required=False, widget=forms.CheckboxInput(attrs={'class':"checkbox style-2 pull-left"}))
     War = forms.BooleanField(label_suffix='',required=False, widget=forms.CheckboxInput(attrs={'class':"checkbox style-2 pull-left"}))
     Western = forms.BooleanField(label_suffix='',required=False, widget=forms.CheckboxInput(attrs={'class':"checkbox style-2 pull-left"}))
+
+class EditProfileForm(UserChangeForm):
+    template_name='/something/else'
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'password'
+)

@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
-from showtimefinder.forms import SignUpForm, LoginForm
+from django.urls import reverse
+from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm
 from showtimefinder.forms import SearchForm, MovieSelection
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -18,9 +19,7 @@ from django.db.models import Q
 from bs4 import BeautifulSoup
 from django.http import HttpRequest
 from requests import get
-import re , json, csv
 import geocoder
-import socket
 import requests
 from django.core import serializers
 
@@ -299,7 +298,6 @@ def select(request):
 def displaymovies(request):
     if request.method == 'POST':
         userselectmovieslist = request.POST.getlist("check")
-        print(userselectmovieslist)
         for movies in userselectmovieslist:
             uSelect = UserSelectMovies(userId=request.user,movieId = movies)
             uSelect.save()
@@ -310,7 +308,6 @@ def displaymovies(request):
 
 
 def landing(request):
-    #request.session.clear()
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
         if form.is_valid():
@@ -319,6 +316,7 @@ def landing(request):
         url = 'https://www.imdb.com/showtimes/US/{}'
         response = get(url.format(text))
         movielist = scrapeData(response)
+
         args = {
             'text': text,
             'form': form,
@@ -346,6 +344,28 @@ def userprofile(request):
     'zipcode': zipcode,
     'dateofbirth': dob}
     return render(request,'userprofile.html', userdetails)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            user = form.save()
+            current_site = get_current_site(request)
+            subject = 'Your details are Updated'
+            message = render_to_string('UserEdit_email.html')
+            # , {
+            # 'user': user,
+            # 'domain': current_site.domain,
+            # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            # 'token': account_activation_token.make_token(user),
+            # })
+            user.email_user(subject, message)
+            return redirect(reverse('userprofile'))
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
 
 def AboutUs(request):
     return render(request,'AboutUs.html')

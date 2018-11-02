@@ -2,6 +2,7 @@
 
 {%block head%}
 <title>User Profile</title>
+
 {% endblock %}
 
 {%block content%}
@@ -14,6 +15,9 @@
     <p>Email : {{ user.email }}</p>
     <p>ZipCode: {{zipcode}}</p>
     <p>DateofBirth: {{dateofbirth}}</p>
+    <p><a href="{% url 'edit_profile' %}">edit_profile</a></p>
+    <p><a href="{% url 'password_reset' %}">Change Password</a></p>
 </div>
 </div>
+
 {% endblock %}
