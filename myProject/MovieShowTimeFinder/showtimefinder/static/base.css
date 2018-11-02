@@ -1,0 +1,178 @@
+*{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+body{
+    background-color:#fff;
+}
+.container {
+    position: relative;
+    top: 20px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  } 
+
+  .container-title {
+    position: relative;
+    top: 10px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  } 
+.center {
+    padding-left: 10%;
+    padding-top: 2%;
+    padding-bottom: -2%;
+    padding-right: 10%;
+    position: relative;
+    background-color:whitesmoke;
+}
+
+.center-genre {
+    padding-left: 5%;
+    padding-bottom: -2%;
+    padding-right: 5%;
+    position: relative;
+    background-color:whitesmoke;
+}
+
+.center1 {
+    padding-left: 10%;
+    padding-top: 2%;
+    padding-bottom: -2%;
+    padding-right: 10%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+  /* bring your own prefixes */
+    transform: translate(-50%, -70%);
+    background-color:whitesmoke;
+}
+
+.form-class {
+    padding-left: 10%;
+    padding-top: 2%;
+    padding-bottom: -2%;
+    padding-right: 10%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+
+.list{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color:darkgrey;
+}
+
+.list li {
+    float: right;
+}
+
+.list li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.list li a:hover {
+    background-color: whitesmoke;
+    text-decoration: none;
+}
+
+.list a{
+    text-decoration: none;
+}
+
+#id_Action{
+    margin-right:10px;
+}
+
+#id_Adventure{
+    margin-right:10px;
+}
+
+#id_Animation{
+    margin-right:10px;
+}
+
+#id_Comedy{
+    margin-right:10px;
+}
+
+#id_Crime{
+    margin-right:10px;
+}
+
+#id_Documentary{
+    margin-right:10px;
+}
+
+#id_Drama{
+    margin-right:10px;
+}
+
+#id_Family{
+    margin-right:10px;
+}
+
+#id_Fantasy{
+    margin-right:10px;
+}
+
+#id_History{
+    margin-right:10px;
+}
+
+#id_Horror{
+    margin-right:10px
+}
+
+#id_Music{
+    margin-right:10px
+}
+
+#id_Mystery{
+    margin-right:10px
+}
+
+#id_Romance{
+    margin-right:10px
+}
+
+#id_Science{
+    margin-right:10px
+}
+
+#id_TV{
+    margin-right:10px
+}
+
+#id_Thriller{
+    margin-right:10px
+}
+
+#id_War{
+    margin-right:10px
+}
+
+#id_Western{
+    margin-right:10px
+}
+
+#check{
+    margin-right:10px
+}
+
+span{
+    display: none;
+}
+
+/* #id_password{
+    display: none;
+} */

@@ -142,3 +142,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'testdjango717@gmail.com'
 EMAIL_HOST_PASSWORD = 'Samali717'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

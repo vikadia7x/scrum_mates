@@ -19,9 +19,7 @@ from django.db.models import Q
 from bs4 import BeautifulSoup
 from django.http import HttpRequest
 from requests import get
-import re , json, csv
 import geocoder
-import socket
 import requests
 from django.core import serializers
 
@@ -86,7 +84,7 @@ def login_page(request):
                 else:
                     return redirect('home.html')
             else:
-                messages.error(request,'username or password not correct')
+                messages.error(request,'Username or Password is incorrect. Please try again!')
                 return render(request, 'login.html', {'form': form})
         else:
             return render(request, 'login.html', {'form': form})
@@ -289,7 +287,7 @@ def select(request):
         ).distinct().order_by('popularity').reverse()
 
         list_genre = list(listmovie)
-        list_genre = list_genre[:10]
+        list_genre = list_genre[:20]
 
         request.session['list_genre'] = list_genre
         return redirect('displaymovies.html')

@@ -7,8 +7,8 @@
 
 {%block content%}
 <div class="container">
-    <h1>Profile</h1>
-    
+<div class="center">
+    <h3>Profile Details</h3>
     <p>User Name : {{ user}}</p>
     <p>First Name : {{ user.first_name }}</p>
     <p>last_name : {{ user.last_name }}</p>
@@ -17,5 +17,7 @@
     <p>DateofBirth: {{dateofbirth}}</p>
     <p><a href="{% url 'edit_profile' %}">edit_profile</a></p>
     <p><a href="{% url 'password_reset' %}">Change Password</a></p>
-    </div>
+</div>
+</div>
+
 {% endblock %}
