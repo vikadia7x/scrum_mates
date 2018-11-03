@@ -1,0 +1,32 @@
+language: python
+sudo: required # necessary for docker
+# Aditya Use this link: https://medium.com/mobileforgood/coding-tips-patterns-for-continuous-integration-with-docker-on-travis-ci-9cedb8348a62
+python:
+  - "3.6"
+  - "3.7"
+# take the docker file and build it into a docker image
+services:
+  - docker
+
+env:
+   global:
+    - USER="username"
+    - PASSW= "password"
+
+script:
+  - docker build --tag orgName/showtimeImage . # build docker image in current directory
+  - docker run orgName/showtimeImage # run the image
+
+after_script:
+  - docker images # to gain an idea on some qualities of the images generate e.g. Disk space etc.
+
+# Now that image of docker file is built deploy it on the website.
+before_deploy:
+  - docker login -u "$USER" -p "$PASSW"
+deploy:
+   provider: script
+   script: docker push orgName/showtimeImage
+   on:
+    branch: develop
+  
+
