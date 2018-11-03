@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+DEFAULT_FROM_EMAIL = 'azure_3f054060a63e899164ea15448f102437@azure.com'
 
 # Application definition
 
@@ -136,17 +137,15 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/code/static'
 
-
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'azure_3f054060a63e899164ea15448f102437@azure.com'
+EMAIL_HOST_PASSWORD = 'Azure@Cloud1'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'testdjango717@gmail.com'
-EMAIL_HOST_PASSWORD = 'Samali717'
+EMAIL_USE_TLS = True
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
