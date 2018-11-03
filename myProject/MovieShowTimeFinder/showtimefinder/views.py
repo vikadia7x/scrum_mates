@@ -234,6 +234,10 @@ def select(request):
         listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
         if(History==1):
             listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
+        
+        listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
+        if(Horror==1):
+            listmovie_History = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
 
         listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
         if(Music==1):
@@ -277,6 +281,7 @@ def select(request):
         | listmovie_Family
         | listmovie_Fantasy
         | listmovie_History
+        | listmovie_Horror
         | listmovie_Music
         | listmovie_Mystery
         | listmovie_Romance
