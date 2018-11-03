@@ -43,7 +43,8 @@ def signup(request):
             'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'token': account_activation_token.make_token(user),
             })
-            user.email_user(subject, message)
+            print(user.email)
+            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
             return redirect('landing.html')
     else:
         form = SignUpForm()
@@ -360,7 +361,10 @@ def edit_profile(request):
             # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             # 'token': account_activation_token.make_token(user),
             # })
-            user.email_user(subject, message)
+            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
+
+            #user.send_email(subject, message)
+            #email.send()
             return redirect(reverse('userprofile'))
     else:
         form = EditProfileForm(instance=request.user)
