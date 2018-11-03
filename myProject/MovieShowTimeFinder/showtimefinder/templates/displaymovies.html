@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}SelectMovieHere{% endblock %}
+
+{% block content %}
+<div class="container-title">
+    <div class="center-genre">
+<h3>Select Movies of your choice</h3>
+<form method="post">
+  {% csrf_token %}
+  <br>
+  {% for l in list_genre %}
+    <p><input type="checkbox" name = "check" id="check" value="{{l.id}}"><b>{{l.title}}</b> </p>
+  {% endfor %}
+  <button type="submit" class="btn btn-info btn-default">Next</button>
+</form>
+<br>
+</div>
+</div>
+{% endblock %}
+
+

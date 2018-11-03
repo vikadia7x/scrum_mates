@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import posixpath
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,12 +26,14 @@ SECRET_KEY = 'cx=@#dlyr)-%zcnkknn!jpkk8q(5^4+uf1u=xfwnl0r@zh3!9w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+DEFAULT_FROM_EMAIL = 'azure_3f054060a63e899164ea15448f102437@azure.com'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'showtimefinder',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    # 'urlparams'
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,25 +84,18 @@ LOGOUT_REDIRECT_URL = 'landing'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'showtimefinder_db',
+        'USER': 'scrum_mates@showtimefinder',
+        'PASSWORD': 'Azure@Cloud',
+        'HOST': 'showtimefinder.database.windows.net',
+        'PORT': '1433',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 13 for SQL Server',
+             'MARS_Connection': 'True',
+        }
     }
 }
-
-""" DATABASES = {
-     'default': {
-         'ENGINE': 'sql_server.pyodbc',
-         'NAME': 'showtimefinder_db',
-         'USER': 'user@scrum_mates',
-         'PASSWORD': 'Azure@Cloud',
-         'HOST': 'shotimefinder.database.windows.net',
-         'PORT': '1433',
-         'OPTIONS': {
-             'driver': 'ODBC Driver 13 for SQL Server',
-             'MARS_Connection': 'True',
-         }
-     }
- } """
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -137,14 +135,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+STATIC_ROOT = '/code/static'
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
-# EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'icorpsdev@gmail.com'
-# EMAIL_HOST_PASSWORD = 'Nomanali7972'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'azure_3f054060a63e899164ea15448f102437@azure.com'
+EMAIL_HOST_PASSWORD = 'Azure@Cloud1'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

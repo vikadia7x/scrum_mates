@@ -1,0 +1,25 @@
+
+
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+<br>
+<div class="center1">
+<h2>Login Here</h2>
+{% for message in messages %} 
+<p style="color: crimson">{{ message }} </p>
+{% endfor %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-info btn-default">Login Here</button>
+<a href="{% url 'password_reset' %}">Forgot Password ?</a>
+</form>
+<br>
+<br>
+</div>
+</div> 
+{% endblock %}

@@ -1,46 +1,45 @@
 {% extends "base.html" %}
 {%block content%}
-<div>
-<a href="{% url 'login' %}">login</a>
-<a href="{% url 'signup' %}">signup</a>
-<p><a href="{% url 'AboutUs' %}">AboutUs</a></p>
-<h2 align="center">This site helps you to find your favourite movies near you!!!</h2>
-<h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
 
-<h4 align="center">Enter the Zip Code</h4>
+<ul class='list'>
+<li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
+<li><a href="{% url 'login_page' %}">Login</a></li>
+<li><a href="{% url 'signup' %}">SignUp</a></li>
+</ul>
 
-<style>
-    form {
-    width:50%;
-    height:100px;
-    margin:auto;
-    position:relative;
-    }
-      input {
-    width:100%;
-    height: 25px;
-    position:relative;
-      }
-    </style>
+<div class="container-title">
+<h3>Movie Showtime Finder</h3>
+</div>
 
-<form method='post' align = "center">
+<div class="container">
+    <!-- <p>Welcome!! SignUp or Login for personalised experience</p> -->
+<form method='post' clas='form-class'>
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></button>
+</form>
+</div>
+<br>
+<br>
+
+<!-- <form method='post' clas='form-class'>
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
-
-    <table class="table table-striped">
+        {{ form}}
+<button type="submit" class="btn btn-info btn-default">Search</button>
+    </form> -->
+    <div>
+    <table class="table table-striped table-hover">
         <tr>
             <th>Theatre Name</th>
             <th>Address</th>
-            <th>Contact Information</th>
-            <th>Movie Poster</th>
-            <th>Movie Name</th>
-            <th>Movie Duration</th>
-            <th>Movie Rating</th>
-            <th>Movie Showtime</th>
-            <th>Movie Showdate</th>
-          </tr>
+            <th>Contact</th>
+            <th> Poster</th>
+            <th> Name</th>
+            <th> Duration</th>
+            <th> Rating</th>
+            <th> Showtime</th>
+            <th> Showdate</th>
+        </tr>
 
           {% for movielisttype in movielist|slice:":1" %}
             {% for movielistall in movielisttype|slice:":5" %}

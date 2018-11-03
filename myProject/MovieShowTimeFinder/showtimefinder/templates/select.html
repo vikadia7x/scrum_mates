@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}MovieGenre{% endblock %}
+
+{% block content %}
+<div class="container-title">
+   <div class="center-genre">
+  <h3>Select you favourite genre</h3>  
+   
+<form method="post">
+  {% csrf_token %}
+  {{form.as_p}}
+  <button type="submit" class="btn btn-info btn-default">Next</button>
+
+  <!-- <table>
+      {{ form.as_table }}
+      <tr>
+          <td></td> -->
+</form>
+<br>
+</div>
+</div>
+{% endblock %}
+
+
