@@ -32,8 +32,8 @@ import csv # to create a csv file
 import requests # to get info from api
 import sys # for exit
 import time # to prevent exceeding api limit
-
-api_key = 'ce4ca93f8fa013d449e34523c2aff0bb'
+# REMOVED API_KEY
+api_key = 'TMDB_API_KEY'
 try:
     # Get all movies currently in theatres in the US according to TMDB
     csvwriter = csv.writer(open("Now_Playing_Movies_Data.csv", "w+")) # write & make it
