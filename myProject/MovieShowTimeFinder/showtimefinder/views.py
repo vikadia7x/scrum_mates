@@ -44,7 +44,7 @@ def signup(request):
             'token': account_activation_token.make_token(user),
             })
             print(user.email)
-            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
+            send_mail(subject, message,'azure_user_sendgrid',[user.email])
             return redirect('landing.html')
     else:
         form = SignUpForm()
@@ -366,7 +366,7 @@ def edit_profile(request):
             # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             # 'token': account_activation_token.make_token(user),
             # })
-            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
+            send_mail(subject, message,'azuresendgrid_user',[user.email])
 
             #user.send_email(subject, message)
             #email.send()
