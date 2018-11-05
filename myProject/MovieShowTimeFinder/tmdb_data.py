@@ -37,12 +37,12 @@ import pandas as pd # to import dataframe on to a database
 import urllib #to pass through exact pyodbc strin
 from sqlalchemy import create_engine # to get the python sql file on the
 
-
-api_key = 'ce4ca93f8fa013d449e34523c2aff0bb'
-server= 'showtimefinder.database.windows.net, 1433'
-user = 'scrum_mates@showtimefinder'
-password = 'Azure@Cloud'
-dbname = 'showtimefinder_db'
+# COMMENT: REMOVED ALL VARIABLES BELOW
+api_key = 'TMDB_API_KEY'
+server= 'SERVER,PORTNAME'
+user = 'USERNAME'
+password = 'PASSWORD'
+dbname = 'DBNAME'
 
 try:
     # Get all movies currently in theatres in the US according to TMDB

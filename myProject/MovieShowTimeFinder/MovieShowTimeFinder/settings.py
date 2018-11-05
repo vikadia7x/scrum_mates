@@ -21,14 +21,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cx=@#dlyr)-%zcnkknn!jpkk8q(5^4+uf1u=xfwnl0r@zh3!9w'
+SECRET_KEY = 'YOUR_SECRET_KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+# REMOVED SECRET_KEY, ALL CAPS STRING PLACE HOLDERS IN DATABASES & DEFAULT_FROM_EMAIL
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DEFAULT_FROM_EMAIL = 'azure_3f054060a63e899164ea15448f102437@azure.com'
+DEFAULT_FROM_EMAIL = 'AZURE_SENTGRID_EMAIL'
 
 # Application definition
 
@@ -84,10 +86,10 @@ LOGOUT_REDIRECT_URL = 'landing'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'showtimefinder_db',
-        'USER': 'scrum_mates@showtimefinder',
-        'PASSWORD': 'Azure@Cloud',
+        'ENGINE': 'ENGINE_NAME',
+        'NAME': 'DBNAME',
+        'USER': 'USERNAME',
+        'PASSWORD': 'PASSWORD',
         'HOST': 'showtimefinder.database.windows.net',
         'PORT': '1433',
         'OPTIONS': {

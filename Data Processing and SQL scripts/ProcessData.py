@@ -1,6 +1,7 @@
 import requests,json,csv
 def genre():
-    url = 'https://api.themoviedb.org/3/genre/movie/list?api_key=ce4ca93f8fa013d449e34523c2aff0bb'
+    # REMOVED URL WITH API KEY
+    url = 'ADD_TMDB_URL_WITH_API_KEY'
     print(1)
     response = requests.request("GET",url)
     print(response.text)
