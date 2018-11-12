@@ -3,3 +3,5 @@ venv/
 myProject/MovieShowTimeFinder/MovieShowTimeFinder/__pycache__
 myProject/MovieShowTimeFinder/__pycache__
 myProject/MovieShowTimeFinder/showtimefinder/__pycache__
+myProject/MovieShowTimeFinder/config.py
+myProject/MovieShowTimeFinder/entrypoint.sh
