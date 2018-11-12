@@ -21,6 +21,7 @@ dbPassword = client.get_secret(VaultUrl, 'DatabasePassword', '').value
 dbName = client.get_secret(VaultUrl, 'DatabaseName', '').value
 dbUser = client.get_secret(VaultUrl, 'DatabaseUser', '').value
 djangoSecretKey = client.get_secret(VaultUrl,'DjangoSecretKey','').value
+apiKeyTMDB = client.get_secret(VaultUrl,'APIKeyTMDB','').value
 
 f = open("config.py", "w")
 f.write("AZURE_SEND_GRID = '"+ azureSendGrid + "'\n")
@@ -29,3 +30,4 @@ f.write("DATABASE_PASSWORD = '"+ dbPassword+ "'\n")
 f.write("DATABASE_NAME = '"+ dbName+ "'\n")
 f.write("DATABASE_USER = '"+ dbUser+ "'\n")
 f.write("DJANGO_SECRET_KEY = '"+ djangoSecretKey+ "'\n")
+f.write("TMDB_API_KEY = '"+ apiKeyTMDB + "'\n")
