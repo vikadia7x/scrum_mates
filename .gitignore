@@ -1,6 +1,5 @@
 venv/
 *.pyc
-myProject/MovieShowTimeFinder/showtimefinder/__pycache__/
-MovieShowTimeFinder/showtimefinder/__pycache__/
-MovieShowTimeFinder/db.sqlite3
-MovieShowTimeFinder/__pycache__/
+myProject/MovieShowTimeFinder/MovieShowTimeFinder/__pycache__
+myProject/MovieShowTimeFinder/__pycache__
+myProject/MovieShowTimeFinder/showtimefinder/__pycache__

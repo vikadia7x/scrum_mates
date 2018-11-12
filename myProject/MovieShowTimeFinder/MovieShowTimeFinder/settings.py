@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import posixpath
+import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,14 +22,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = config.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DEFAULT_FROM_EMAIL = 'sendgrid_azure'
+DEFAULT_FROM_EMAIL = config.AZURE_SEND_GRID
 
 # Application definition
 
@@ -41,8 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'urlparams'
-
 ]
 
 MIDDLEWARE = [
@@ -82,17 +81,16 @@ LOGOUT_REDIRECT_URL = 'landing'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-#Database values have been replaced with dummy values.
 DATABASES = {
     'default': {
-        'ENGINE': 'engine_name',
-        'NAME': 'you_database_name',
-        'USER': 'you_user_name',
-        'PASSWORD': 'your_password',
-        'HOST': 'azure_server_name',
-        'PORT': 'portname',
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': config.DATABASE_NAME,
+        'USER': config.DATABASE_USER,
+        'PASSWORD': config.DATABASE_PASSWORD,
+        'HOST': config.DATABASE_HOST_SERVER,
+        'PORT': '1433',
         'OPTIONS': {
-            'driver': 'driver',
+            'driver': 'ODBC Driver 13 for SQL Server',
              'MARS_Connection': 'True',
         }
     }
@@ -141,12 +139,5 @@ STATIC_ROOT = '/code/static'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
-
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'sendgrid_azurename'
-EMAIL_HOST_PASSWORD = 'sendgrid_password'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
