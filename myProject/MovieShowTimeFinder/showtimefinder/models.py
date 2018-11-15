@@ -74,6 +74,11 @@ class MovieGenreSelection(models.Model):
     War = models.BooleanField(null=True)
     Western = models.BooleanField(null=True)
     popularity = models.FloatField(null=True)
+	
+class UserNotification(models.Model):
+    userId = models.TextField(null=False)
+    movieId = models.TextField(null=False)
+	movieName = models.TextField(null=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -83,3 +88,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
+	
