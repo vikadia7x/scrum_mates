@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-# REMOVED INFO FROM SECRET_KEY; DATABASES
+
 import os
+import posixpath
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,17 +21,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'AZURE_SECRET_KEY'
+SECRET_KEY = 'cx=@#dlyr)-%zcnkknn!jpkk8q(5^4+uf1u=xfwnl0r@zh3!9w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+DEFAULT_FROM_EMAIL = 'azure_3f054060a63e899164ea15448f102437@azure.com'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'showtimefinder',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,10 +84,10 @@ LOGOUT_REDIRECT_URL = 'landing'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'YOUR_ENGINE_NAME',
-        'NAME': 'YOUR_DBNAME',
-        'USER': 'YOUR_USERNAME',
-        'PASSWORD': 'YOUR_PASSWORD',
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'showtimefinder_db',
+        'USER': 'scrum_mates@showtimefinder',
+        'PASSWORD': 'Azure@Cloud',
         'HOST': 'showtimefinder.database.windows.net',
         'PORT': '1433',
         'OPTIONS': {
@@ -131,14 +135,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = '/code/static'
+
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'azure_5818dcc3c64a38a4b19353189045166c@azure.com'
+EMAIL_HOST_PASSWORD = 'Azure@Cloud1'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'testdjango717@gmail.com'
-EMAIL_HOST_PASSWORD = 'Samali717'
+EMAIL_USE_TLS = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

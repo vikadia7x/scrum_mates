@@ -1,24 +1,25 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
-from showtimefinder.forms import SignUpForm, LoginForm
+from django.urls import reverse
+from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm
 from showtimefinder.forms import SearchForm, MovieSelection
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from django.shortcuts import render_to_response
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import messages
 from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies
 from showtimefinder.models import User
 from django.db.models import Q
 from bs4 import BeautifulSoup
 from django.http import HttpRequest
 from requests import get
-import re , json, csv
 import geocoder
-import socket
 import requests
 from django.core import serializers
 
@@ -42,7 +43,8 @@ def signup(request):
             'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'token': account_activation_token.make_token(user),
             })
-            user.email_user(subject, message)
+            print(user.email)
+            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
             return redirect('landing.html')
     else:
         form = SignUpForm()
@@ -70,6 +72,7 @@ def login_page(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            # password = forms.CharField(max_length=32, widget=forms.PasswordInput)
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -82,6 +85,7 @@ def login_page(request):
                 else:
                     return redirect('home.html')
             else:
+                messages.error(request,'Username or Password is incorrect. Please try again!')
                 return render(request, 'login.html', {'form': form})
         else:
             return render(request, 'login.html', {'form': form})
@@ -230,6 +234,10 @@ def select(request):
         listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
         if(History==1):
             listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
+        
+        listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
+        if(Horror==1):
+            listmovie_History = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
 
         listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
         if(Music==1):
@@ -273,6 +281,7 @@ def select(request):
         | listmovie_Family
         | listmovie_Fantasy
         | listmovie_History
+        | listmovie_Horror
         | listmovie_Music
         | listmovie_Mystery
         | listmovie_Romance
@@ -284,7 +293,7 @@ def select(request):
         ).distinct().order_by('popularity').reverse()
 
         list_genre = list(listmovie)
-        list_genre = list_genre[:10]
+        list_genre = list_genre[:20]
 
         request.session['list_genre'] = list_genre
         return redirect('displaymovies.html')
@@ -341,6 +350,31 @@ def userprofile(request):
     'zipcode': zipcode,
     'dateofbirth': dob}
     return render(request,'userprofile.html', userdetails)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            user = form.save()
+            current_site = get_current_site(request)
+            subject = 'Your details are Updated'
+            message = render_to_string('UserEdit_email.html')
+            # , {
+            # 'user': user,
+            # 'domain': current_site.domain,
+            # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            # 'token': account_activation_token.make_token(user),
+            # })
+            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
+
+            #user.send_email(subject, message)
+            #email.send()
+            return redirect(reverse('userprofile'))
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
 
 def AboutUs(request):
     return render(request,'AboutUs.html')

@@ -1,211 +1,74 @@
 {% extends "base.html" %}
-
 {%block content%}
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<ul class='list'>
+<li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
+<li><a href="{% url 'login_page' %}">Login</a></li>
+<li><a href="{% url 'signup' %}">SignUp</a></li>
+</ul>
 
-      <div class="container">
-        <!--<a class="navbar-brand" href="#">Start Bootstrap</a>-->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <!--<a class="nav-link" onclick="document.getElementById('id01').style.display='block'">Login</a>-->
-              <a href="{% url 'login' %}">login</a>
+<div class="container-title">
+<h3>Movie Showtime Finder</h3>
+</div>
 
-            </li>
-            <li class="nav-item">
-              <!--<a class="nav-link" onclick="document.getElementById('id02').style.display='block'">Sign up</a>-->
-              <a href="{% url 'signup' %}">signup</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<div class="container">
+    <!-- <p>Welcome!! SignUp or Login for personalised experience</p> -->
+<form method='post' clas='form-class'>
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></button>
+</form>
+</div>
+<br>
+<br>
 
-    <div id="id01" class="modal">
+<!-- <form method='post' clas='form-class'>
+        {% csrf_token %}
+        {{ form}}
+<button type="submit" class="btn btn-info btn-default">Search</button>
+    </form> -->
+    <div>
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Theatre Name</th>
+            <th>Address</th>
+            <th>Contact</th>
+            <th> Poster</th>
+            <th> Name</th>
+            <th> Duration</th>
+            <th> Rating</th>
+            <th> Showtime</th>
+            <th> Showdate</th>
+        </tr>
 
-      <form class="modal-content animate">
-        <div class="imgcontainer">
-          <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-          <img src="static/images/icon-user_person-generic.png" alt="Avatar" class="avatar">
-        </div>
+          {% for movielisttype in movielist|slice:":1" %}
+            {% for movielistall in movielisttype|slice:":5" %}
+            <tr>
 
-        <div class="container">
-          <label for="uname"><b>Username</b></label>
-          <input type="text" placeholder="Enter Username" name="uname" required>
+              {% for movieinfo in movielistall|slice:"3:" %}
 
-          <label for="psw"><b>Password</b></label>
-          <input type="password" placeholder="Enter Password" name="psw" required>
+              <td>{{ movielistall.0 }}</td>
 
-          <button type="submit">Login</button>
-          <label>
-            <input type="checkbox" checked="checked" name="remember"> Remember me
-          </label>
-        </div>
+              <td>{{ movielistall.1 }}</td>
 
-        <div class="container" style="background-color:#f1f1f1">
-          <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-          <span class="psw">Forgot <a href="#">password?</a></span>
-        </div>
-      </form>
-    </div>
+              <td>{{ movielistall.2 }}</td>
 
+              <td><img src = "{{ movieinfo.1 }}"></td>
 
-    <div id="id02" class="modal">
-      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-      <form class="modal-content">
-        <div class="container">
-          <h1>Sign Up</h1>
-          <p>Please fill in this form to create an account.</p>
-          <hr>
-          <label for="email"><b>Email</b></label>
-          <input type="text" placeholder="Enter Email" name="email" required>
+              <td>{{ movieinfo.0 }}</td>
 
-          <label for="psw"><b>Password</b></label>
-          <input type="password" placeholder="Enter Password" name="psw" required>
+              <td>{{ movieinfo.2 }}</td>
 
-          <label for="psw-repeat"><b>Repeat Password</b></label>
-          <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+              <td>{{ movieinfo.3 }}</td>
 
-          <label>
-            <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
-          </label>
+              <td>{{ movieinfo.4 }}</td>
 
-          <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
+              <td>{{ movieinfo.5 }}</td>
+            </tr>
+            {% endfor %}
 
-          <div class="clearfix">
-            <button type="button" onclick="document.getElementById('id02').style.display='none'" class="cancelbtn">Cancel</button>
-            <button type="submit" class="signupbtn">Sign Up</button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-
-
-
-    <!-- Page Content -->
-    <div class="container">
-
-      <style>
-      .jumbotron {
-        background-image: url("poster1.png");
-      }
-
-      </style>
-
-      <!-- Jumbotron Header -->
-      <header class="jumbotron my-4">
-        <h1 class="display-3">A Warm Welcome!</h1>
-
-        <!--<a href="#" class="btn btn-primary btn-lg">Call to action!</a>-->
-
-        <h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
-
-        <h4 align="center">Enter the Zip Code</h4>
-
-        <style>
-            form {
-            width:50%;
-            height:100px;
-            margin:auto;
-            position:relative;
-            }
-              input {
-            width:100%;
-            height: 25px;
-            position:relative;
-              }
-        </style>
-
-        <form method='post' align = "center">
-                {% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Submit">
-        </form>
-
-        <!-- Integration :
-        <div id="search">
-          <h3>Please search with your zip code for recommended movie listing</h3>
-          <input type='text' placeholder='Search...' id='search-text-input' />
-          <div id='button-holder'>
-            <img src='search_icon.jpg'/>
-          </div>
-        </div>-->
-      </header>
-
-      <!-- Page Features -->
-
-      {% for movielisttype in movielist|slice:":1" %}
-        {% for movielistall in movielisttype|slice:":5" %}
-      <div class="row text-center">
-        {% for movieinfo in movielistall|slice:"3:" %}
-
-        <div class="col-lg-3 col-md-6 mb-4">
-          <div class="card">
-            <img class="card-img-top" src="{{ movieinfo.1 }}" alt="">
-            <div class="card-body">
-              <h4 class="card-title">{{ movieinfo.0 }}</h4>
-              <p class="card-text">
-                <tr>{{ movielistall.0 }}</tr>
-                <tr>{{ movielistall.1 }}</tr>
-                <tr>{{ movielistall.2 }}</tr>
-              </p>
-            </div>
-            <div class="card-footer">
-              <a href="#" class="btn btn-primary">Find Out More!</a>
-            </div>
-          </div>
-        </div>
-
-        {% endfor %}
-
-      </div>
-
-        {% endfor %}
-      {% endfor %}
-
-
-    </div>
-
-    <script src="static/bootstrap/jquery.min.js"></script>
-    <script src="static/bootstrap/bootstrap.bundle.min.js"></script>
-
-    <script>
-    // Get the modal
-    var modal = document.getElementById('id01');
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-    </script>
-
-    <script>
-    // Get the modal
-    var modal = document.getElementById('id02');
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-    </script>
-
-    {% endblock %}
-    <!-- /.container -->
+            {% endfor %}
+          {% endfor %}
+    </table>
+  </div>
+{% endblock %}

@@ -23,7 +23,9 @@ from django.conf.urls import url
 
 
 urlpatterns = [
+    path('',views.landing,name='landing'),
     path('admin/', admin.site.urls),
+    path('', views.landing, name='landing'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login.html', views.login_page, name='login_page'),
     path('select.html', views.select, name='select'),
@@ -33,8 +35,10 @@ urlpatterns = [
     path('userprofile.html', views.userprofile, name='userprofile'),
     path('AboutUs.html', views.AboutUs, name='AboutUs'),
     path('landing.html', views.landing, name='landing'),
+    path('edit_profile.html', views.edit_profile, name='edit_profile'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
+  
 
 
     # path(r'^accounts/', auth_views.password_reset, name='password_reset_form'),

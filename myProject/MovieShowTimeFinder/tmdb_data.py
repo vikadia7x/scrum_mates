@@ -31,9 +31,19 @@ i.      adult (bool);
 import csv # to create a csv file
 import requests # to get info from api
 import sys # for exit
-import time # to prevent exceeding api limit
-# REMOVED API_KEY
-api_key = 'TMDB_API_KEY'
+import time # to prevent exceeding api limit 
+import pyodbc
+import pandas as pd # to import dataframe on to a database
+import urllib #to pass through exact pyodbc strin
+from sqlalchemy import create_engine # to get the python sql file on the
+
+
+api_key = 'tmdbkey'
+server= 'azureserver,port'
+user = 'susername'
+password = 'password'
+dbname = 'dbname'
+
 try:
     # Get all movies currently in theatres in the US according to TMDB
     csvwriter = csv.writer(open("Now_Playing_Movies_Data.csv", "w+")) # write & make it
@@ -67,8 +77,20 @@ try:
                                 jsonObj2["tagline"], jsonObj2["title"], jsonObj2["video"], jsonObj2["vote_average"], jsonObj2["vote_count"]])
             
         print("finished :)")
-        counter += 1
-
-except requests.exceptions.HTTPError as err:
+        counter += 1    
+    df = pd.read_csv('Now_Playing_Movies_Data.csv')
+    # Export the resultant csv data to the MSSQL database as per documentation in microsoft
+    params=urllib.parse.quote_plus('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';DATABASE='+dbname+';UID='+user+';PWD='+password)
+    engine = create_engine('mssql+pyodbc:///odbc_connect=%s'%params)
+    
+    df.to_sql(
+        name= "NowPlayingData",
+        con=engine,
+        if_exists='replace',
+        index=False
+        )
+      
+except Exception as err:
     print(err)
     sys.exit(1)
+
