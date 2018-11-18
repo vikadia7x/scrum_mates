@@ -36,7 +36,7 @@ import pyodbc
 import pandas as pd # to import dataframe on to a database
 import urllib #to pass through exact pyodbc strin
 from sqlalchemy import create_engine # to get the python sql file on the
-
+from django.core.mail import send_mail
 
 api_key = 'tmdbkey'
 server= 'azureserver,port'
@@ -89,7 +89,24 @@ try:
         if_exists='replace',
         index=False
         )
-      
+		
+	# -- Begin: Added by Subhradeep -- #
+	df_send = pd.read_sql_query('select a.Original_title, a.imdb_id, a.poster_path, a.popularity, c.email from NowPlayingData a, user_notification b, auth_user c where b.movie_id = a.id and b.user_id = c.username',con=engine)
+    subject = 'Movie notification'
+	for row in df_send.rows:
+        message = "Movie Name: " + row['Original_title'] + "\n"
+		"Popularity: " + row['popularity'] + "\n"
+		#+ row['Original_title'] + "\n"
+		#message = render_to_string('account_activation_email.html', {
+		#'user': user,
+		#'domain': current_site.domain,
+		#'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+		#'token': account_activation_token.make_token(user),
+		#})
+		print(row['email'])
+		send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',row['email'])
+	# -- End: Added by Subhradeep -- #		
+			
 except Exception as err:
     print(err)
     sys.exit(1)
