@@ -512,3 +512,7 @@ def scrapeData(response):
             movielisteven.append(movielistall)
             movielist.append(movielisteven)
             return movielist
+
+ 
+def movieInfo(request):
+    return render(request,'AboutUs.html')
