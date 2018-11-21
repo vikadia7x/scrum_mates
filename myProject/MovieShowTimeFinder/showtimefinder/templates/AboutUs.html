@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="center">
   <h1>- About Us –</h1>
   <p>We are movie addicts and want to stimulate the same around us. </p>
 
   <h1>- Our Team –</h1>
   <p>Prashansa</p>
+  {% load static %}
+  <img src="{% static "Images/Prashansa.jpg" %}" style='max-height:100px;' alt="My image">
   <p>Shivam Verma</p>
+  <img src="{% static "Images/Shiwam.png" %}" style='max-height:100px;' alt="My image">
   <p>Sami Muhammad</p>
+  <img src="{% static "Images/Sami.png" %}" style='max-height:100px;' alt="My image">
   <p>Subhradeep Biswas</p>
+  <img src="{% static "Images/Subhradeep.png" %}" style='max-height:100px;' alt="My image">
   <p>Aditya Sammant</p>
+  <img src="{% static "Images/Aditya_s.png" %}" style='max-height:100px;' alt="My image">
   <p>Aditya Vikram</p>
+  <img src="{% static "Images/Aditya_V.png" %}" style='max-height:100px;' alt="My image">
+</div>
 {% endblock %}

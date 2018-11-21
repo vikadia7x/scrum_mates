@@ -353,17 +353,32 @@ def userprofile(request):
 def edit_profile(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
-
+        user = User.objects.filter(username=request.user).values()
+        userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+        zipcode = userprofile[0].get('zipcode')
+        print(zipcode)
+        dob = userprofile[0].get('dateofbirth')
+        userdetails = {
+        'zipcode': zipcode,
+        'dateofbirth': dob}
         if form.is_valid():
             user = form.save()
             current_site = get_current_site(request)
             subject = 'Your details are Updated'
             message = render_to_string('UserEdit_email.html')
-            send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
+            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
             return redirect(reverse('userprofile'))
     else:
         form = EditProfileForm(instance=request.user)
-        args = {'form': form}
+        user = User.objects.filter(username=request.user).values()
+        userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+        zipcode = userprofile[0].get('zipcode')
+        print(zipcode)
+        dob = userprofile[0].get('dateofbirth')
+        args = {'form': form,
+        'zipcode': zipcode,
+        'dateofbirth': dob
+        }
         return render(request, 'edit_profile.html', args)
 
 def AboutUs(request):

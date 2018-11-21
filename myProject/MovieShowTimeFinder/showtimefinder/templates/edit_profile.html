@@ -3,11 +3,35 @@
 {% block title %}edit_profile{% endblock %}
 
 {% block content %}
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home">User Details</a></li>
+    <li><a data-toggle="tab" href="#menu1">Movie Preferences</a></li>
+  </ul>
+  {% csrf_token %}
+  <div class="center">
+  <div class="tab-content">
+    <div id="home" class="tab-pane fade in active">
+        <h3>Hello {{ user}}!</h3>
+        <p>You can edit your details here! Don't forget to save.</p>
+        <p><label for="first_name">First Name  :</label>
+            <input type="textbox" placeholder= {{user.first_name}} />{{ user.first_name }}</p>
+        <p><label for="last_name">Last Name  :</label>
+            <input type="textbox" placeholder= {{user.last_name}} />{{ user.last_name }}</p>
+        <p><label for="email">Email : </label>
+            <input type="textbox" placeholder= {{user.email}} />{{ user.email }}</p>
+        <p><label for="zipcode">ZipCode: </label>
+            <input type="textbox" placeholder= {{zipcode}} />{{zipcode}}</p>
+    </div>
+    <div id="menu1" class="tab-pane fade">
+      <h3>Hello {{ user}}!</h3>
+      <p>You can edit movie perferences here! Don't forget to save.</p>
+    </div>
+  </div> 
 <div class="container"></div>
-<h2>Edit User Profile</h2>
+
 <form method="post">
 {% csrf_token %}
-{{ form.as_p }}
+
 <button type="submit">Save</button>
 
 </form>
