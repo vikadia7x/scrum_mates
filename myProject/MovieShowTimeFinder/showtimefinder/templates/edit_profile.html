@@ -21,18 +21,15 @@
             <input type="textbox" placeholder= {{user.email}} />{{ user.email }}</p>
         <p><label for="zipcode">ZipCode: </label>
             <input type="textbox" placeholder= {{zipcode}} />{{zipcode}}</p>
+            <button type="submit">Save</button>
+        <p>If case you want to change password go here -><a href="{% url 'password_reset' %}">Change Password</a></p>
     </div>
     <div id="menu1" class="tab-pane fade">
       <h3>Hello {{ user}}!</h3>
       <p>You can edit movie perferences here! Don't forget to save.</p>
+      <p>If case you want to change your movie preferences go here -><a href="{% url 'select' %}">select genre</a></p>
     </div>
   </div> 
-<div class="container"></div>
-
-<form method="post">
-{% csrf_token %}
-
-<button type="submit">Save</button>
 
 </form>
 </div>
