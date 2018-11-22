@@ -11,19 +11,14 @@ import pyodbc
 import h5py
 from azure.storage.blob import BlockBlobService, PublicAccess
 import os
+import datetime as dt
+
 
 def get_director(x):
     for i in x:
         if i['job'] == 'Director':
             return i['name']
     return np.nan
-
-def filter_keywords(x):
-    words = []
-    for i in x:
-        if i in s:
-            words.append(i)
-    return words
 
 def preProcess(metaData, nowPlayingMetaData, credits_nowplaying, keywords_nowplaying, links_nowplaying):
     print(metaData.dtypes)
@@ -89,7 +84,7 @@ def preProcess(metaData, nowPlayingMetaData, credits_nowplaying, keywords_nowpla
     print(metaData.shape)
     print(nowPlayingMetaDataLinks.dtypes)
     print(metaData.dtypes)
-    metaData = metaData.append(nowPlayingMetaDataLinks)
+    metaData = metaData.append(nowPlayingMetaDataLinks, ignore_index=True)
     print(metaData['final'])
     print(metaData.shape)
     print(metaData.dtypes)
@@ -103,14 +98,13 @@ def filtering(metaDataLinks):
     tf = TfidfVectorizer(analyzer='word',ngram_range=(1, 2),min_df=0, stop_words='english')
     tfidf_matrix = tf.fit_transform(metaDataLinks['final'].values.astype('U'))
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-    print(cosine_sim.shape)
-    print(type(cosine_sim))
-    print(cosine_sim)
-    print("Pickling")
-    metaDataLinks = metaDataLinks.drop(['release_date', 'genres', 'tagline', 'overview', 'status', 'vote_average', 'vote_count', 'cast', 'crew', 'keywords', 'cast_size', 'crew_size', 'director', 'description', 'final'], axis=1)
+
     """
+    print("Pickling")
+    #metaDataLinks = metaDataLinks.drop(['release_date', 'genres', 'tagline', 'overview', 'status', 'vote_average', 'vote_count', 'cast', 'crew', 'keywords', 'cast_size', 'crew_size', 'director', 'description', 'final'], axis=1)
+    
     with h5py.File('cosine_sim_f.h5', 'w') as hf:
-        hf.create_dataset("name-of-dataset",  data=cosine_sim)"""
+        hf.create_dataset("name-of-dataset",  data=cosine_sim)
     np.save('cosine_sim.npy', cosine_sim)    # .npy extension is added if not given
     print("cosine converted")
 
@@ -137,16 +131,62 @@ def filtering(metaDataLinks):
     for blob in generator:
         print("\t Blob name: " + blob.name)
 
-
+    """
     return(cosine_sim)
 
+def process_Output(metaDataLinks):
+    #metaDataLinks1 = pd.read_hdf('meta_data.h5', 'metaDataLinks')
+    #metaDataLinks1 = metaDataLinks1.reset_index()
+    metaDataLinks = metaDataLinks.reset_index()
+    indices= pd.Series(metaDataLinks.index, index= metaDataLinks['title'])
+    return indices
+
+def get_recommendations(title, indices, cosine_sim, metaDataLinks, userid):
+    """
+    print("Opening Pickle file")
+    with h5py.File('cosine_sim_f.h5', 'r') as hf:
+        cosine_sim_1 = hf['name-of-dataset'][:]
+    print(cosine_sim_1)
+    """
+    idx = indices[title]
+    user = userid
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:]
+    movie_indices = [i[0] for i in sim_scores]
+    movies = metaDataLinks.iloc[movie_indices][['title','flag','id','imdb_id','year','popularity']]
+    qualified = movies[movies.flag == 1]
+    qualified = qualified.assign(userId = user)
+    qualified = qualified.assign(orginal_movie = title)
+    qualified = qualified.assign(time_stamp = dt.datetime.now())
+    #qualified["orginal_movie"] = title
+    return qualified.head(10)
+
+def recommendation(indices, cosine_sim, metaDataLinks):
+    userSelectedMovies['movieName'] = userSelectedMovies['movieName'].astype(str)
+    recommended = pd.DataFrame()
+    for index, row in userSelectedMovies.iterrows():
+        temp = get_recommendations(row["movieName"], indices, cosine_sim, metaDataLinks, row["userId"])
+        recommended = recommended.append(temp)
+    return(recommended)
+
+
 def flow():
-    metaDataLinks = preProcess(metaData, nowPlayingMetaData, credits_nowplaying, keywords_nowplaying, links_nowplaying)
-    cosine_sim = filtering(metaDataLinks)
+    if flag == 0 :
+        metaDataLinks = preProcess(metaData, nowPlayingMetaData, credits_nowplaying, keywords_nowplaying, links_nowplaying)
+        cosine_sim = filtering(metaDataLinks)
+        indices = process_Output(metaDataLinks)
+        user_recommended = recommendation(indices, cosine_sim, metaDataLinks)
+        print(user_recommended.head(100))
+
+        for index,row in user_recommended.iterrows():
+            cursor.execute("INSERT INTO [dbo].[RecommendedMovies]([title],[flag],[id],[imdb_id],[year],[popularity],[original_movie],[time_stamp],[userId]) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", row['title'],row['flag'],row['id'],row['imdb_id'],row['year'],row['popularity'],row['orginal_movie'],row['time_stamp'],row['userId']) 
+            cursor.execute("UPDATE [dbo].[showtimefinder_userselectmovies] SET isMovieRec = ?",1)         
+            cnxn.commit()
 
 
 if __name__ == '__main__':  
-    
+
     server = 'showtimefinder.database.windows.net'
     database = 'showtimefinder_db'
     username = 'scrum_mates@showtimefinder'
@@ -155,12 +195,26 @@ if __name__ == '__main__':
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
 
+    """
     account_name = 'recommendation'
     key = "ci34Ud18UbZNSgVnc4iFjHH7OQm4qq/wL8xWBulqHDI2AYWdnZsWNIKLk/B8XUxvgMSFpOS1OzAcyO+/Wa6wKw=="
     block_blob_service = BlockBlobService(account_name=account_name, account_key=key)
+    """
+    userSelectedMovies = pd.DataFrame()
+    query_userselected = "SELECT * FROM [dbo].[showtimefinder_userselectmovies] WHERE isMovieRec = 0"
+    for chunk in pd.read_sql_query(query_userselected, cnxn, chunksize=10**4):
+        userSelectedMovies = pd.concat([userSelectedMovies, chunk])
+        print(userSelectedMovies)
+    print(userSelectedMovies.shape)
+
+    flag = 0
+    if userSelectedMovies.empty:
+        print('DataFrame is empty!')
+        flag = 1
+        exit()
 
     metaData = pd.DataFrame()
-    query_meta = "SELECT id, title, release_date, genres, tagline, overview, imdb_id, popularity, status, vote_average, vote_count, year, flag, cast, crew, keywords, cast_size, crew_size, director, description FROM [dbo].[processMetadata] "
+    query_meta = "SELECT A.id, title, release_date, genres, tagline, overview, imdb_id, popularity, [status], vote_average, vote_count, [year], flag, [cast], crew, keywords, cast_size, crew_size, director, [description] FROM [dbo].[processMetadata] A JOIN [dbo].[showtimefinder_userselectmovies] B ON A.id = B.tmdbId"
     for chunk in pd.read_sql_query(query_meta, cnxn, chunksize=10**4):
         metaData = pd.concat([metaData, chunk])
         print(metaData)
@@ -193,12 +247,5 @@ if __name__ == '__main__':
         links_nowplaying = pd.concat([links_nowplaying, chunk])
         print(links_nowplaying)
     print(links_nowplaying.shape)
-
-    userSelectedMovies = pd.DataFrame()
-    query_userselected = "SELECT * FROM [dbo].[showtimefinder_userselectmovies] WHERE isMovieRec = 0"
-    for chunk in pd.read_sql_query(query_userselected, cnxn, chunksize=10**4):
-        userSelectedMovies = pd.concat([userSelectedMovies, chunk])
-        print(userSelectedMovies)
-    print(userSelectedMovies.shape)
 
     flow()

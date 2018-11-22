@@ -143,7 +143,7 @@ AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'azure_3f054060a63e899164ea15448f102437@azure.com'
+EMAIL_HOST_USER = 'azure_5818dcc3c64a38a4b19353189045166c@azure.com'
 EMAIL_HOST_PASSWORD = 'Azure@Cloud1'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
