@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class SearchForm(forms.Form):
-    post = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Enter zipcode','size': 80}))
+    post = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Enter zipcode','style':'height:50px', 'size':'80'}))
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')

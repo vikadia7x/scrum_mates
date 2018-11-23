@@ -1,74 +1,277 @@
 {% extends "base.html" %}
 {%block content%}
+		
+    <!-- Home Slider -->
+<div class= "home">
+    <div class="home_slider_container">
+        <div class="owl-carousel owl-theme home_slider">
+            
+            <!-- Home Slider Item -->
+            <div class="owl-item">
+                <div class="home_slider_background" style="background-image:url(/static/images/home_slider_1.jpg)"></div>
+            </div>
 
-<ul class='list'>
-<li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
-<li><a href="{% url 'login_page' %}">Login</a></li>
-<li><a href="{% url 'signup' %}">SignUp</a></li>
-</ul>
+            <!-- Home Slider Item -->
+            <div class="owl-item">
+                <div class="home_slider_background" style="background-image:url(/static/images/home_slider_2.jpg)"></div>
+            </div>
 
-<div class="container-title">
-<h3>Movie Showtime Finder</h3>
+            <!-- Home Slider Item -->
+            <div class="owl-item">
+                <div class="home_slider_background" style="background-image:url(/static/images/home_slider_3.jpg)"></div>
+            </div>
+
+        </div>
+		<!-- Home Slider Nav -->
+		 <div class="home_slider_next d-flex flex-column align-items-center justify-content-center"><img src="../static/images/arrow_r.png" alt=""></div>
+    </div>
+        <!--Top Rated Movies-->
+
+        <div class="topratedmovies">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="section_title_container text-center">
+                            <div class="section_subtitle">in threatres near you</div>
+                            <div class="section_title">Top Rated Movies</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row topratedmovies_container">
+    
+                    <!-- topratedmovies Item -->
+                    <div class="col-lg-4 topratedmovies_col">
+                        <div class="topratedmovies_item">
+                            <div class="topratedmovies_image">
+                                <img src= "{{popular_movies.0}}" alt="">
+                            </div>
+                            <div class="topratedmovies_link"><a href="#">Book Now</a></div>
+                        </div>
+                    </div>
+    
+                    <!-- topratedmovies Item -->
+                    <div class="col-lg-4 topratedmovies_col">
+                        <div class="topratedmovies_item">
+                            <div class="topratedmovies_image">
+                                <img src="{{popular_movies.1}}" alt="">
+                            </div>
+                            <div class="topratedmovies_link"><a href="#">Book Now</a></div>
+                        </div>
+                    </div>
+    
+                    <!-- topratedmovies Item -->
+                    <div class="col-lg-4 topratedmovies_col">
+                        <div class="topratedmovies_item">
+                            <div class="topratedmovies_image">
+                                <img src="{{popular_movies.2}}" alt="">
+                            </div>
+                            <div class="topratedmovies_link"><a href="#">Book Now</a></div>
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+
+        <!-- New Arrivals -->
+
+	<div class="newarrivals">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div class="section_title_container text-center">
+						<div class="section_subtitle">only the best</div>
+						<div class="section_title">new arrivals</div>
+					</div>
+				</div>
+			</div>
+			<div class="row newarrivals_container">
+
+				<!-- Latest Movie 1 -->
+				<div class="col-lg-4 newarrival_col">
+					<div class="newarrival">
+						<div class="newarrival_image">
+							<img src="{{latest_movies.0}}" alt="">
+						</div>
+					</div>
+					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
+				</div>
+
+				<!-- Latest Movie 2 -->
+				<div class="col-lg-4 newarrival_col">
+					<div class="newarrival">
+						<div class="newarrival_image">
+							<img src="{{latest_movies.1}}" alt="">
+						</div>
+					</div>
+					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
+                </div>
+                
+                <!-- Latest Movie 3 -->
+				<div class="col-lg-4 newarrival_col">
+					<div class="newarrival">
+						<div class="newarrival_image">
+							<img src="{{latest_movies.2}}" alt="">
+						</div>
+					</div>
+					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
+				</div>
+
+			</div>
+		</div>
+    </div>
+    
+
+	<!-- Gallery -->
+
+	<div class="gallery">
+		<div class="gallery_image" style="background-image:url(/static/images/gallery_7.jpg)"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div class="gallery_title text-center">
+						<ul>
+							<li><a href="#">#showtimefinder</a></li>
+							<li><a href="#">#showtimeinstagram</a></li>
+							<li><a href="#">#movietickets</a></li>
+						</ul>
+					</div>
+					<div class="gallery_text text-center">Follow us on instgram and twitter for updates
+					<div class="footer_social">
+						<ul>
+							<li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-reddit-alien" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						</ul>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="gallery_slider_container">
+			
+			<!-- Gallery Slider -->
+			<div class="owl-carousel owl-theme gallery_slider">
+				
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.0}}">
+						<img src="{{popular_movies.0}}" alt="">
+					</a>
+				</div>
+
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.1}}">
+						<img src="{{popular_movies.1}}" alt="">
+					</a>
+				</div>
+
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.2}}">
+						<img src="{{popular_movies.2}}" alt="">
+					</a>
+				</div>
+
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.3}}">
+						<img src="{{popular_movies.3}}" alt="">
+					</a>
+				</div>
+
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.4}}">
+						<img src="{{popular_movies.4}}" alt="">
+					</a>
+				</div>
+
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.5}}">
+						<img src="{{popular_movies.5}}" alt="">
+					</a>
+				</div>
+			</div>
+		</div>	
+	</div>
+
+	<!-- Search -->
+
+	<div class="search">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<div class="section_title_container text-center">
+							<div class="form-group">
+								<form method='post' class='form-class'>
+									{% csrf_token %}
+									{{ form }}
+									<button class="btn btn-primary btn-lg" type="submit" ><i class="fa fa-search"></i></button>
+								</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				<div class="row newarrival_row">
+					{% for movie in movie_info_list %}
+					<!-- newarrival Image -->
+					<div class="col-lg-4" style="margin-bottom:30px;margin-top:30px">
+						<div class="newarrival_image">
+							<div class="newarrival_image_large"><img src="{{ movie.poster }}" alt=""></div>
+						</div>
+					</div>
+					<!-- newarrival Content -->
+					<div class="col-lg-8">
+						<div class="newarrival_content">
+							<div class="newarrival_title" style="margin-bottom:10px;margin-top:30px;">{{ movie.title }}</div>
+								<div class="newarrival_name" style="margin-bottom:10px">
+									<span><b>Runtime:</b> {{ movie.runtime }} mins</span> 
+										&nbsp; &nbsp; &nbsp; &nbsp;
+									<span><b>Release Date:</b> {{ movie.release_date }}</span>
+										&nbsp; &nbsp; &nbsp; &nbsp;
+									<b>Rating:</b>
+									<span class="rating rating_{{movie.vote_average}}" data-rating="{{ movie.vote_average }}">
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+									<span> &nbsp;{{movie.vote_average}}/5</span>
+									</span>
+								</div>
+								<div class="newarrival_text" style="margin-bottom:10px">
+									<b>Overview: </b>
+									<p>{{ movie.overview }}</p>
+									<b>Movie Shows Available At:</b>
+								</div>
+								{% for threatre in movieThreatreList%}
+								{%if threatre.imdbid == movie.imdbId %}
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Name:&nbsp;</b>{{threatre.threater_name}}</span> 
+								</div>
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Showtime:&nbsp;</b>{{threatre.movie_showtime}}</span> 
+								</div>
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Address:&nbsp;</b>{{threatre.threater_streetaddress}}</span>
+									<span>,{{threatre.threater_addressLocality}} </span>
+									<span>{{threatre.threater_addressRegion}} </span>
+									<span>{{threatre.threater_postalCode}}</span> 
+									<span><b>Phone:&nbsp;</b>{{threatre.threater_telephone}}</span> 
+								</div>
+								<br>
+								{%endif%}
+								{%endfor%}
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
 </div>
-
-<div class="container">
-    <!-- <p>Welcome!! SignUp or Login for personalised experience</p> -->
-<form method='post' clas='form-class'>
-    {% csrf_token %}
-    {{ form }}
-    <button type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></button>
-</form>
-</div>
-<br>
-<br>
-
-<!-- <form method='post' clas='form-class'>
-        {% csrf_token %}
-        {{ form}}
-<button type="submit" class="btn btn-info btn-default">Search</button>
-    </form> -->
-    <div>
-    <table class="table table-striped table-hover">
-        <tr>
-            <th>Theatre Name</th>
-            <th>Address</th>
-            <th>Contact</th>
-            <th> Poster</th>
-            <th> Name</th>
-            <th> Duration</th>
-            <th> Rating</th>
-            <th> Showtime</th>
-            <th> Showdate</th>
-        </tr>
-
-          {% for movielisttype in movielist|slice:":1" %}
-            {% for movielistall in movielisttype|slice:":5" %}
-            <tr>
-
-              {% for movieinfo in movielistall|slice:"3:" %}
-
-              <td>{{ movielistall.0 }}</td>
-
-              <td>{{ movielistall.1 }}</td>
-
-              <td>{{ movielistall.2 }}</td>
-
-              <td><img src = "{{ movieinfo.1 }}"></td>
-
-              <td>{{ movieinfo.0 }}</td>
-
-              <td>{{ movieinfo.2 }}</td>
-
-              <td>{{ movieinfo.3 }}</td>
-
-              <td>{{ movieinfo.4 }}</td>
-
-              <td>{{ movieinfo.5 }}</td>
-            </tr>
-            {% endfor %}
-
-            {% endfor %}
-          {% endfor %}
-    </table>
-  </div>
 {% endblock %}
