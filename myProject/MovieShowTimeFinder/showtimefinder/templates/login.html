@@ -9,7 +9,7 @@
 <br>
 <div class="center1">
 <h2>Login Here</h2>
-{% for message in messages %} 
+{% for message in messages %}
 <p style="color: crimson">{{ message }} </p>
 {% endfor %}
 <form method="post">
@@ -20,6 +20,9 @@
 </form>
 <br>
 <br>
+<a href="{% url 'social:begin' 'twitter' %}">Login with Twitter</a>
+<br>
+<br>
 </div>
-</div> 
+</div>
 {% endblock %}
