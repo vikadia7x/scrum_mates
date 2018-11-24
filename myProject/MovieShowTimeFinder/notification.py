@@ -209,8 +209,7 @@ def sendtoDB(host, uid, pwd, db):
             found = False
             message = "Hi " + row['username'] + ", \n"+"\n"+"Recommended Movies for you: "+"\n"
             for index, row1 in df_movie.iterrows():
-                message = message + "Movie name: "+row1['title']+"\n"
-                "Popularity: " + str(row1['popularity']) + "\n"
+                message = message + "Movie name: "+row1['title']+"\n"+"Popularity: " + str(row1['popularity']) + "\n"
 
                 df_send = pd.read_sql_query(
                     '''select top (1) n.showdate, n.showtime, n.cinema
@@ -223,9 +222,7 @@ def sendtoDB(host, uid, pwd, db):
                 for index, row2 in df_send.iterrows():
                     print(str(row2['showdate']))
                     print(str(row2['showtime']))
-                    message = message + "Theater name: " + str(row2['cinema']) + "\n"
-                    "Show date: " + str(row2['showdate']) + "\n"
-                    "Show time: " + str(row2['showtime']) + "\n"+"\n"
+                    message = message + "Theater name: " + str(row2['cinema']) + "\n"+"Show date: " + str(row2['showdate']) + "\n"+"Show time: " + str(row2['showtime']) + "\n"+"\n"
                 found = True
 
                 # message = render_to_string('UserNotifyEmail.html')
