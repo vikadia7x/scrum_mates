@@ -156,11 +156,6 @@ def select(request):
                 genre_list['Fantasy'] = Fantasy
             else:
                 genre_list['Fantasy'] = 0
-            History = form.cleaned_data.get('History')
-            if (History==1):
-                genre_list['History'] = History
-            else:
-                genre_list['History'] = 0
             Horror = form.cleaned_data.get('Horror')
             if (Horror==1):
                 genre_list['Horror'] = Horror
@@ -242,14 +237,10 @@ def select(request):
         listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
         if(Family==1):
             listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
-
-        listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
-        if(History==1):
-            listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
         
         listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
         if(Horror==1):
-            listmovie_History = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
+            listmovie_Horror = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
 
         listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
         if(Music==1):
@@ -292,7 +283,6 @@ def select(request):
         | listmovie_Documentary
         | listmovie_Family
         | listmovie_Fantasy
-        | listmovie_History
         | listmovie_Horror
         | listmovie_Music
         | listmovie_Mystery
@@ -302,7 +292,7 @@ def select(request):
         | listmovie_Thriller
         | listmovie_Western
         | listmovie_War
-        ).distinct().order_by('popularity').reverse()
+        ).distinct().filter(votecount__gte='100').order_by('voteavg','popularity').reverse()
 
         list_genre = list(listmovie)
         list_genre = list_genre[:20]
@@ -316,8 +306,10 @@ def select(request):
 def displaymovies(request):
     if request.method == 'POST':
         userselectmovieslist = request.POST.getlist("check")
+        print(userselectmovieslist)
         for movies in userselectmovieslist:
-            uSelect = UserSelectMovies(userId=request.user,movieId = movies)
+            movieselect = MovieGenreSelection.objects.filter(tmdbId=movies).values()
+            uSelect = UserSelectMovies(userId=request.user,tmdbId = movies, movieName = movieselect[0].get('title'))
             uSelect.save()
         return redirect('home.html')
     else:
