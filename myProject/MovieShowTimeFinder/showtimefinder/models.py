@@ -48,6 +48,17 @@ class MovieGenreSelection(models.Model):
     voteavg = models.FloatField(null=True)
 
 
+class RecommendedMovie(models.Model):
+    title = models.TextField(null=True)
+    flag = models.TextField(null=True)
+    userId = models.TextField(null=True)
+    imdb_id = models.TextField(null=True)
+    year = models.TextField(null=True)
+    popularity = models.TextField(null=True)
+    original_movie = models.TextField(null=True)
+    time_stamp = models.DateField(null=True)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
