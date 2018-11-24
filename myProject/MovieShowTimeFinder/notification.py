@@ -165,7 +165,9 @@ def sendtoDB(host, uid, pwd, db):
         print("Begin")
 
         df_zip = pd.read_sql_query(
-            'select user_id, zipcode from dbo.showtimefinder_userprofile a   where email_confirmed = 1',
+            '''select b.username username, a.zipcode zipcode from dbo.showtimefinder_userprofile a, auth_user b
+            where a.user_id = b.id
+            and a.email_confirmed = 1''',
             con=cxn)
         moviecursor = cxn.cursor()
         moviecursor.execute('Truncate table user_notification_details;')
@@ -176,32 +178,65 @@ def sendtoDB(host, uid, pwd, db):
             response = get(url.format(zipcode))
             li = scrapeData(response)
             for i in range(0, len(li)):
-                moviecursor.execute(movieinsert, str(row['user_id']), str(li[i][1]), str(li[i][-1]), str(li[i][-2]),
+                moviecursor.execute(movieinsert, str(row['username']), str(li[i][1]), str(li[i][-1]), str(li[i][-2]),
                                     str(li[i][0]))
                 moviecursor.commit()
 
         # print(li[1])
         # print(li[1][1])
 
-        # settings.configure()
-        df_send = pd.read_sql_query(
-            'select a.Original_title title, a.imdb_id imdb_id, a.poster_path poster_path, a.popularity popularity, c.email email from NowPlayingData_tmp a, user_notification b, auth_user c where b.movie_id = a.id and b.user_id = c.id',
+        df_user = pd.read_sql_query(
+            'select distinct b.username, b.email email from auth_user b   '
+            'where b.is_active = 1',
             con=cxn)
+
+        for index, row in df_user.iterrows():
+            username = row['username']
+            print(username)
+            df_movie = pd.read_sql_query(
+                '''select distinct (b.title +' ('+b.year+')') title, b.popularity popularity
+                from RecommendedMovies b
+                where b.popularity in (select top (3) popularity 
+                                    from RecommendedMovies  
+                                    order by popularity Desc)
+                and b.userid = '%s' ''' %username,
+                #params = ,
+                con=cxn)
+
+            subject = 'Movie notification'
+            print(subject)
+            print(df_movie)
+            found = False
+            message = "Hi " + row['username'] + ", \n"+"\n"+"Recommended Movies for you: "+"\n"
+            for index, row1 in df_movie.iterrows():
+                message = message + "Movie name: "+row1['title']+"\n"
+                "Popularity: " + str(row1['popularity']) + "\n"
+
+                df_send = pd.read_sql_query(
+                    '''select top (1) n.showdate, n.showtime, n.cinema
+                      from user_notification_details n
+                      where n.movie_name = '%s' 
+                        and user_id = '%s' ''' %(row1['title'], username),
+                    # params = ,
+                    con=cxn)
+                print(df_send)
+                for index, row2 in df_send.iterrows():
+                    print(str(row2['showdate']))
+                    print(str(row2['showtime']))
+                    message = message + "Theater name: " + str(row2['cinema']) + "\n"
+                    "Show date: " + str(row2['showdate']) + "\n"
+                    "Show time: " + str(row2['showtime']) + "\n"+"\n"
+                found = True
+
+                # message = render_to_string('UserNotifyEmail.html')
+
+                # from_email = settings.EMAIL_HOST_USER
+                # to_email = [from_email , row['email']]
+            if found == True:
+                send_mail(subject, message, cf.AZURE_SEND_GRID, [row['email']])
+            # -- End: Added by Subhradeep -- #
+
         cxn.close()
-        subject = 'Movie notification'
-        print(subject)
-        print(df_send)
-
-        for index, row in df_send.iterrows():
-            message = "Movie Name: " + row['title'] + "\n"
-            "Popularity: " + str(row['popularity']) + "\n"
-
-            # message = render_to_string('UserNotifyEmail.html')
-
-            # from_email = settings.EMAIL_HOST_USER
-            # to_email = [from_email , row['email']]
-            send_mail(subject, message, cf.AZURE_SEND_GRID, [row['email']])
-        # -- End: Added by Subhradeep -- #
 
     except Exception as err:
         print("SendtoDB")
