@@ -458,7 +458,7 @@ def home(request):
         }
         return render(request, 'home.html', args)
     else:
-        #os.system("python hello.py")
+        os.system("python hello.py")
         form = SearchForm()
         user = User.objects.filter(username=request.user).values()
         userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
