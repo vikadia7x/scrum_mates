@@ -354,7 +354,6 @@ def landing(request):
         }
         return render(request, 'landing.html', args)
     else:
-        print(datetime.datetime.now())
         form = SearchForm()
         g = geocoder.ip('me')
         if (g.postal is not '85281'):
@@ -367,26 +366,22 @@ def landing(request):
         response = get(url.format(text))
 
         getmovielist = scrapeMovie(response, text)
-        print(datetime.datetime.now())
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        print(datetime.datetime.now())
         
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
-        print(datetime.datetime.now())
+
         #popular movie posters in HD
         pickpopularmovies = 'https://www.imdb.com/showtimes/location/US/{}'
         pickpopularmoviesresp = get(pickpopularmovies.format(text))
         popularmovieposterlinks = scrapePosterInfoData(pickpopularmoviesresp)
-        print(datetime.datetime.now())
 
         #latest movie posters in HD
         picklatestmovies = 'https://www.imdb.com/showtimes/location/US/{}?sort=release_date,desc&st_dt='+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'&mode=showtimes_grid&page=1'
         picklatestmoviesrep = get(picklatestmovies.format(text))
         picklatestmoviesreplinks = scrapePosterInfoData(picklatestmoviesrep)
-        print(datetime.datetime.now())
 
         args = {
             'movie_info_list' : movie_info_list,
