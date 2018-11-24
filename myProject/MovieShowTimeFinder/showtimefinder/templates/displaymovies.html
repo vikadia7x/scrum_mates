@@ -3,20 +3,35 @@
 {% block title %}SelectMovieHere{% endblock %}
 
 {% block content %}
-<div class="container-title">
-    <div class="center-genre">
-<h3>Select Movies of your choice</h3>
-<form method="post">
-  {% csrf_token %}
-  <br>
-  {% for l in list_genre %}
-    <p><input type="checkbox" name = "check" id="check" value="{{l.id}}"><b>{{l.title}}</b> </p>
-  {% endfor %}
-  <button type="submit" class="btn btn-info btn-default">Next</button>
-</form>
-<br>
-</div>
-</div>
+<div class="topratedmovies">
+    <div class="container">
+        <h3 style="padding-top: 50px;">Select your favourite movies. .</h3>
+                <div class="section_title_container" style="padding-top: 10px;overflow: scroll">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class = "form-check" style="list-style-type: none;">
+                        <div class="row">
+                        {% for l in list_genre|slice:"0:10" %}
+                        <div class = "form-check col-lg-6">
+                          <p><input type="checkbox" name = "check" id="check" value="{{l.tmdbId}}" style="margin: 0px 10px 0px 0px">
+                            <b>{{l.title}}</b>
+                          </p>
+                        </div>
+                        {% endfor %}
+                        {% for l in list_genre|slice:"10:20" %}
+                        <div class = "form-check col-lg-6">
+                          <p><input type="checkbox" name = "check" id="check" value="{{l.tmdbId}}" style="margin: 0px 10px 0px 0px">
+                            <b>{{l.title}}</b>
+                          </p>
+                        </div>
+                        {% endfor %}
+                        </div>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-lg btn-block" style="float:right">Next</button>
+                      </form>
+                </div>
+        </div>
+    </div>
 {% endblock %}
 
 
