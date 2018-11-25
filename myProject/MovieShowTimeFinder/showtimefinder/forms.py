@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
-
+from showtimefinder.models import UserProfile
+from django.forms import ModelForm
+from betterforms.multiform import MultiModelForm
 
 class SearchForm(forms.Form):
     post = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Enter zipcode','style':'height:50px', 'size':'80'}))
@@ -10,7 +12,7 @@ class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
-    dateofbirth = forms.DateField(input_formats=['%Y-%m-%d'], required=True, help_text='Format:YYYY-MM-DD')
+    dateofbirth = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
     zipcode = forms.CharField()
 
     class Meta:
@@ -41,14 +43,28 @@ class MovieSelection(forms.Form):
     War = forms.BooleanField(label_suffix='',required=False, widget=forms.CheckboxInput(attrs={'class':"checkbox style-2 pull-left",'style':"margin: 5px 10px 0px 3px;"}))
     Western = forms.BooleanField(label_suffix='',required=False, widget=forms.CheckboxInput(attrs={'class':"checkbox style-2 pull-left",'style':"margin: 5px 10px 0px 3px;"}))
 
-class EditProfileForm(UserChangeForm):
-    template_name='/something/else'
+class EditProfileForm(ModelForm):
 
     class Meta:
         model = User
+        exclude = ['password']
         fields = (
             'email',
             'first_name',
             'last_name',
-            'password'
 )
+
+class EditUserProfileForm(ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'dateofbirth',
+            'zipcode',
+        )
+
+# class UserEditMultiForm(MultiModelForm):
+#     form_classes = {
+#         'user': EditProfileForm,
+#         'profile': EditUserProfileForm,
+#     }
