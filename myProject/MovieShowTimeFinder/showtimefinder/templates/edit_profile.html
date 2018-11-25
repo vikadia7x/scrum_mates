@@ -3,14 +3,17 @@
 {% block title %}edit_profile{% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top:200px;"></div>
+
+<div class="container" style="margin-top:200px;" style='max-height:10px;'></div>
+<div class="center"></div>
 <h2>Edit User Profile</h2>
 <form method="post">
 {% csrf_token %}
 {{ form1.as_p }}
 {{ form2.as_p }}
+<p><a href="{% url 'password_reset' %}">Change Password</a></p>
 <button type="submit">Save</button>
-
 </form>
+</div>
 </div>
 {% endblock %}
