@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,22 +7,22 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Movie Show Time Finder">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="../static/bootstrap4/bootstrap.min.css">
-<link href="../static/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="../static/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
-<link rel="stylesheet" type="text/css" href="../static/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
-<link rel="stylesheet" type="text/css" href="../static/plugins/OwlCarousel2-2.2.1/animate.css">
-<link href="../static/plugins/colorbox/colorbox.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="../static/css/main_styles.css">
-<link rel="stylesheet" type="text/css" href="../static/css/responsive.css">
-<script src="static/js/jquery-3.2.1.min.js"></script>
-<script src="static/bootstrap4/popper.js"></script>
-<script src="static/bootstrap4/bootstrap.min.js"></script>
-<script src="static/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
-<script src="static/plugins/easing/easing.js"></script>
-<script src="static/plugins/parallax-js-master/parallax.min.js"></script>
-<script src="static/plugins/colorbox/jquery.colorbox-min.js"></script>
-<script src="static/js/custom.js"></script>
+<link rel="stylesheet" type="text/css" href="{% static '/bootstrap4/bootstrap.min.css' %}">
+<link href="{% static  'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/owl.carousel.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/owl.theme.default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/animate.css' %}">
+<link href="{% static '/plugins/colorbox/colorbox.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{% static '/css/main_styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/responsive.css' %}">
+<script src="{% static '/js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static '/bootstrap4/popper.js' %}"></script>
+<script src="{% static '/bootstrap4/bootstrap.min.js' %}"></script>
+<script src="{% static '/plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>
+<script src="{% static '/plugins/easing/easing.js' %}"></script>
+<script src="{% static '/plugins/parallax-js-master/parallax.min.js' %}"></script>
+<script src="{% static '/plugins/colorbox/jquery.colorbox-min.js' %}"></script>
+<script src="{% static '/js/custom.js' %}"></script>
 </head>
 <body>
 
@@ -32,22 +33,35 @@
 			<div class="logo"><a href="{% url 'home' %}">ShowtimeFinder</a></div>
 			<nav class="main_nav">
 				<ul>
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="{% url 'home' %}">GetFreePosters</a></li>
-          <li><a href="{% url 'home' %}">SerachByMovie</a></li>
-					<li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
+					{% if user.is_authenticated %}
+						  <li><a href="{% url 'home' %}">Home</a></li>
+					{% endif %}
+          			<li><a href="{% url 'home' %}">GetFreePosters</a></li>
+          			<li><a href="{% url 'home' %}">SerachByMovie</a></li>
+					 <li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
+					 {% if user.is_authenticated == False %}
+		  			<li><a href="{% url 'login_page' %}">Login</a></li>
+					<li><a href="{% url 'signup' %}">SignUp</a></li>
+					{% endif %}
+					{% if user.is_authenticated %}
+					<li><a href="{% url 'logout' %}">LogOut</a></li>
+					<li><a href="{% url 'select' %}">Change Genre</a></li>
+					<div class="avatar" style="float:right">
+						<li><a href="{% url 'userprofile' %}"><img src="{% static '/images/avatar.svg' %}" alt=""></a></li>
+					</div>
+					{% endif %}
 				</ul>
 			</nav>
-				<div class="usernavigation">
-					<!-- Avatar -->
+				<!-- <div class="usernavigation">
 					<a href="#">
 						<div class="avatar">
-            <a href="{% url 'userprofile' %}"><img src="static/images/avatar.svg" alt=""></a>
-            <a href="{% url 'login_page' %}">Login</a>
-            <a href="{% url 'signup' %}">SignUp</a>
+								<ul>
+										<li><a href="{% url 'userprofile' %}"><img src="static/images/avatar.svg" alt=""></a></li>
+											<li><a href="{% url 'login_page' %}">Login</a></li>
+												<li><a href="{% url 'signup' %}">SignUp</a></li>
+								</ul>
 						</div>
-					</a>
-				</div>
+				</div> -->
 			</div>
 		</div>
     </header>
