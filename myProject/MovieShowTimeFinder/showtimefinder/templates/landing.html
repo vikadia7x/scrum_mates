@@ -43,7 +43,11 @@
                     <div class="col-lg-4 topratedmovies_col">
                         <div class="topratedmovies_item">
                             <div class="topratedmovies_image">
-                                <img src= "{{popular_movies.0}}" alt="">
+								{%for movie in movie_info_list%}
+								{%if movie.poster_path == popular_movies.0%}
+								 <a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{popular_movies.0}}" alt=""></a>
+								{%endif%}
+								{%endfor%}
                             </div>
                             <div class="topratedmovies_link"><a href="#">Book Now</a></div>
                         </div>
@@ -53,7 +57,11 @@
                     <div class="col-lg-4 topratedmovies_col">
                         <div class="topratedmovies_item">
                             <div class="topratedmovies_image">
-                                <img src="{{popular_movies.1}}" alt="">
+									{%for movie in movie_info_list%}
+									{%if movie.poster_path == popular_movies.1%}
+									 <a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{popular_movies.1}}" alt=""></a>
+									{%endif%}
+									{%endfor%}
                             </div>
                             <div class="topratedmovies_link"><a href="#">Book Now</a></div>
                         </div>
@@ -63,7 +71,11 @@
                     <div class="col-lg-4 topratedmovies_col">
                         <div class="topratedmovies_item">
                             <div class="topratedmovies_image">
-                                <img src="{{popular_movies.2}}" alt="">
+									{%for movie in movie_info_list%}
+									{%if movie.poster_path == popular_movies.2%}
+									 <a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{popular_movies.2}}" alt=""></a>
+									{%endif%}
+									{%endfor%}
                             </div>
                             <div class="topratedmovies_link"><a href="#">Book Now</a></div>
                         </div>
@@ -91,7 +103,11 @@
 				<div class="col-lg-4 newarrival_col">
 					<div class="newarrival">
 						<div class="newarrival_image">
-							<img src="{{latest_movies.0}}" alt="">
+							{%for movie in movie_info_list%}
+							{%if movie.poster_path == latest_movies.0%}
+							<a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{latest_movies.0}}" alt=""></a>
+							{%endif%}
+							{%endfor%}
 						</div>
 					</div>
 					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
@@ -101,7 +117,11 @@
 				<div class="col-lg-4 newarrival_col">
 					<div class="newarrival">
 						<div class="newarrival_image">
-							<img src="{{latest_movies.1}}" alt="">
+								{%for movie in movie_info_list%}
+							{%if movie.poster_path == latest_movies.1%}
+							<a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{latest_movies.1}}" alt=""></a>
+							{%endif%}
+							{%endfor%}
 						</div>
 					</div>
 					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
@@ -111,7 +131,11 @@
 				<div class="col-lg-4 newarrival_col">
 					<div class="newarrival">
 						<div class="newarrival_image">
-							<img src="{{latest_movies.2}}" alt="">
+								{%for movie in movie_info_list%}
+							{%if movie.poster_path == latest_movies.2%}
+							<a href="{%url 'movieInfo'%}?id={{movie.imdbId}}"><img src= "{{latest_movies.2}}" alt=""></a>
+							{%endif%}
+							{%endfor%}
 						</div>
 					</div>
 					<div class="topratedmovies_link"><a href="#">Book Now</a></div>
