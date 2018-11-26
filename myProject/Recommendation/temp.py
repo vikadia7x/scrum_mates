@@ -4,15 +4,6 @@ import numpy as np
 from azure.storage.blob import BlockBlobService, PublicAccess
 import os
 
-account_name = 'recommendation'
-key = "ci34Ud18UbZNSgVnc4iFjHH7OQm4qq/wL8xWBulqHDI2AYWdnZsWNIKLk/B8XUxvgMSFpOS1OzAcyO+/Wa6wKw=="
-server = 'showtimefinder.database.windows.net'
-database = 'showtimefinder_db'
-username = 'scrum_mates@showtimefinder'
-password = 'Azure@Cloud'
-driver='/usr/local/lib/libmsodbcsql.13.dylib'
-cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
-cursor = cnxn.cursor()
 """
 block_blob_service = BlockBlobService(account_name=account_name, account_key=key)
 

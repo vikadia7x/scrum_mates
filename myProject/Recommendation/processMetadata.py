@@ -92,10 +92,10 @@ def flow():
 
 if __name__ == '__main__':  
     
-    server = 'showtimefinder.database.windows.net'
-    database = 'showtimefinder_db'
-    username = 'scrum_mates@showtimefinder'
-    password = 'Azure@Cloud'
+    server = ''
+    database = ''
+    username = ''
+    password = ''
     driver='/usr/local/lib/libmsodbcsql.13.dylib'
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import posixpath
+import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,14 +22,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cx=@#dlyr)-%zcnkknn!jpkk8q(5^4+uf1u=xfwnl0r@zh3!9w'
+
+SECRET_KEY = config.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+# REMOVED SECRET_KEY, ALL CAPS STRING PLACE HOLDERS IN DATABASES & DEFAULT_FROM_EMAIL
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DEFAULT_FROM_EMAIL = 'azure_3f054060a63e899164ea15448f102437@azure.com'
+DEFAULT_FROM_EMAIL = config.AZURE_SEND_GRID
 
 # Application definition
 
@@ -41,8 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'urlparams'
-
 ]
 
 MIDDLEWARE = [
@@ -85,10 +87,10 @@ LOGOUT_REDIRECT_URL = 'landing'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'showtimefinder_db',
-        'USER': 'scrum_mates@showtimefinder',
-        'PASSWORD': 'Azure@Cloud',
-        'HOST': 'showtimefinder.database.windows.net',
+        'NAME': config.DATABASE_NAME,
+        'USER': config.DATABASE_USER,
+        'PASSWORD': config.DATABASE_PASSWORD,
+        'HOST': config.DATABASE_HOST_SERVER,
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 13 for SQL Server',
@@ -143,8 +145,8 @@ AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'azure_5818dcc3c64a38a4b19353189045166c@azure.com'
-EMAIL_HOST_PASSWORD = 'Azure@Cloud1'
+EMAIL_HOST_USER = config.AZURE_SEND_GRID
+EMAIL_HOST_PASSWORD = config.AZURE_SEND_GRID_PASSWORD
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

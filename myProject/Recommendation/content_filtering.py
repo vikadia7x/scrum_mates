@@ -147,18 +147,21 @@ def flow():
 
 if __name__ == '__main__':  
     
-    server = 'showtimefinder.database.windows.net'
-    database = 'showtimefinder_db'
-    username = 'scrum_mates@showtimefinder'
-    password = 'Azure@Cloud'
+    
+    server = ''
+    database = ''
+    username = ''
+    password = ''
     driver='/usr/local/lib/libmsodbcsql.13.dylib'
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
 
-    account_name = 'recommendation'
-    key = "ci34Ud18UbZNSgVnc4iFjHH7OQm4qq/wL8xWBulqHDI2AYWdnZsWNIKLk/B8XUxvgMSFpOS1OzAcyO+/Wa6wKw=="
+    """
+    account_name = ''
+    key = ""
     block_blob_service = BlockBlobService(account_name=account_name, account_key=key)
 
+    """
     metaData = pd.DataFrame()
     query_meta = "SELECT id, title, release_date, genres, tagline, overview, imdb_id, popularity, status, vote_average, vote_count, year, flag, cast, crew, keywords, cast_size, crew_size, director, description FROM [dbo].[processMetadata] "
     for chunk in pd.read_sql_query(query_meta, cnxn, chunksize=10**4):

@@ -22,6 +22,7 @@ from requests import get
 import geocoder
 import requests
 from django.core import serializers
+import config
 
 def signup(request):
     if request.method == 'POST':
@@ -43,8 +44,7 @@ def signup(request):
             'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'token': account_activation_token.make_token(user),
             })
-            print(user.email)
-            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
+            send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
             return redirect('landing.html')
     else:
         form = SignUpForm()
@@ -72,7 +72,6 @@ def login_page(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            # password = forms.CharField(max_length=32, widget=forms.PasswordInput)
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -360,16 +359,7 @@ def edit_profile(request):
             current_site = get_current_site(request)
             subject = 'Your details are Updated'
             message = render_to_string('UserEdit_email.html')
-            # , {
-            # 'user': user,
-            # 'domain': current_site.domain,
-            # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-            # 'token': account_activation_token.make_token(user),
-            # })
-            send_mail(subject, message,'azure_3f054060a63e899164ea15448f102437@azure.com',[user.email])
-
-            #user.send_email(subject, message)
-            #email.send()
+            send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
             return redirect(reverse('userprofile'))
     else:
         form = EditProfileForm(instance=request.user)
@@ -522,3 +512,7 @@ def scrapeData(response):
             movielisteven.append(movielistall)
             movielist.append(movielisteven)
             return movielist
+
+ 
+def movieInfo(request):
+    return render(request,'AboutUs.html')
