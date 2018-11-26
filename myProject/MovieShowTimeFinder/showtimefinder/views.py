@@ -31,11 +31,13 @@ from operator import itemgetter
 
 def createDBConnection():
     server = config.DATABASE_HOST_SERVER
+    print(server)
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
-    driver='/usr/local/lib/libmsodbcsql.13.dylib'
-    cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+    #driver='/usr/local/lib/libmsodbcsql.13.dylib'
+    # driver = {ODBC Driver 13 for SQL Server}
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     return cnxn
 
 def signup(request):
@@ -305,7 +307,7 @@ def select(request):
         listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
         if(Family==1):
             listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
-        
+
         listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
         if(Horror==1):
             listmovie_Horror = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
@@ -391,7 +393,7 @@ def landing(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -399,7 +401,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -437,7 +439,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -472,7 +474,7 @@ def home(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -480,7 +482,7 @@ def home(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -515,7 +517,7 @@ def home(request):
         while (i!=len(uSelect)):
             getmovielist.append(uSelect[i].get('imdb_id'))
             i = i+1
-        
+
         #movie theatre list
         movieThreatreList = scrapeThreatre(set(getmovielist),text)
         #get movie data from db to display
@@ -531,7 +533,7 @@ def home(request):
             'movieThreatreList' : movieThreatreList,
             'form': form
         }
-        return render(request, 'home.html', args) 
+        return render(request, 'home.html', args)
 
 
 def scrapeMovie(response,text):
@@ -650,6 +652,6 @@ def getMovieInfoFromDB(imdbList):
             }
             movie_info_list.append(movie_info)
     return movie_info_list
- 
+
 def movieInfo(request):
     return render(request,'AboutUs.html')
