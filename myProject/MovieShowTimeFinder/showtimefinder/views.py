@@ -511,7 +511,7 @@ def home(request):
         userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
         zipcode = userprofile[0].get('zipcode')
         text = zipcode
-        uSelect = RecommendedMovie.objects.filter(userId = request.user).order_by('time_stamp').values()[:5]
+        uSelect = RecommendedMovie.objects.filter(userId = request.user).values()
         getmovielist = []
         i = 0
         while (i!=len(uSelect)):
