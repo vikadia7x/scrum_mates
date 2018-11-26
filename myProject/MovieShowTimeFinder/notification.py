@@ -195,9 +195,9 @@ def sendtoDB(host, uid, pwd, db):
             print(username)
             df_movie = pd.read_sql_query(
                 '''select distinct (b.title +' ('+b.year+')') title, b.popularity popularity
-                from RecommendedMovies b
+                from showtimefinder_recommendedmovie b
                 where b.popularity in (select top (3) popularity 
-                                    from RecommendedMovies  
+                                    from showtimefinder_recommendedmovie  
                                     order by popularity Desc)
                 and b.userid = '%s' ''' %username,
                 #params = ,
