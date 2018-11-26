@@ -1,9 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm , PasswordResetForm
 from django.contrib.auth.models import User
 from showtimefinder.models import UserProfile
 from django.forms import ModelForm
-from betterforms.multiform import MultiModelForm
+from django.core.exceptions import ValidationError
+# from betterforms.multiform import MultiModelForm
 
 class SearchForm(forms.Form):
     post = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Enter zipcode','style':'height:50px', 'size':'80'}))
@@ -62,6 +63,14 @@ class EditUserProfileForm(ModelForm):
             'dateofbirth',
             'zipcode',
         )
+
+class EmailValidationOnForgotPassword(PasswordResetForm):
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email__iexact=email, is_active=True).exists():
+            raise ValidationError("There is no user registered with the specified email address!")
+
+        return email
 
 # class UserEditMultiForm(MultiModelForm):
 #     form_classes = {
