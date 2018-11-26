@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from showtimefinder.models import UserProfile
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
-# from betterforms.multiform import MultiModelForm
 
 class SearchForm(forms.Form):
     post = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder': 'Enter zipcode','style':'height:50px', 'size':'80'}))
@@ -56,7 +55,7 @@ class EditProfileForm(ModelForm):
 )
 
 class EditUserProfileForm(ModelForm):
-
+    zipcode = forms.CharField()
     class Meta:
         model = UserProfile
         fields = (
