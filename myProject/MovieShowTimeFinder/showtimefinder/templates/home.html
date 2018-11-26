@@ -1,96 +1,162 @@
 {% extends "base.html" %}
 {%block content%}
-      <!-- {% if user.is_authenticated %} -->
-     <!-- <p><a href="{% url 'logout' %}">Logout</a></p>
-      <p><a href="{% url 'userprofile' %}">Profile</a></p>
-      <p><a href="{% url 'AboutUs' %}">AboutUs</a></p> -->
-      <ul class='list'>
-          <li><a href="{% url 'logout' %}">Logout</a></li>
-          <li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
-          <li><a href="{% url 'userprofile' %}">Profile</a></li>
-      </ul>
-      <div class="container-title">
-          <h3>Welcome {{ user.username }} :) Movies in threatre you may like . . .</h3>
-      </div>
+		
+    <!-- Home Slider -->
+<div class= "home">
+	<!-- Search -->
 
-    <!-- {% else %}
-      <p>You are not logged in</p>
-      <a href="{% url 'login_page' %}">login</a>
-      <h3 align="center">Welcome {{ user.username }}!! SignUp or Login for personalised experience</h3>
-    {% endif %} -->
-    <!-- <h4 align="center" style="color: red;">Enter the Zip Code</h4>
+	<div class="search" style="padding-top:150px;">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<div class="section_title_container text-center">
+							<div class="form-group">
+								<form method='post' class='form-class'>
+									{% csrf_token %}
+									{{ form }}
+									<button class="btn btn-primary btn-lg" type="submit" ><i class="fa fa-search"></i></button>
+								</form>
+								</div>
+								<!--class="btn btn-primary btn-lg"-->
+							</div>
+						</div>
+					</div>
+				<div class="row newarrival_row">
+					{% for movie in movie_info_list|slice:"0:5"  %}
+					<!-- newarrival Image -->
+					<div class="col-lg-4" style="margin-bottom:30px;margin-top:30px">
+						<div class="newarrival_image">
+							<div class="newarrival_image_large"><img src="{{ movie.poster }}" alt=""></div>
+						</div>
+					</div>
+					<!-- newarrival Content -->
+					<div class="col-lg-8">
+						<div class="newarrival_content">
+							<div class="newarrival_title" style="margin-bottom:10px;margin-top:30px;">{{ movie.title }}</div>
+								<div class="newarrival_name" style="margin-bottom:10px">
+									<span><b>Runtime:</b> {{ movie.runtime }} mins</span> 
+										&nbsp; &nbsp; &nbsp; &nbsp;
+									<span><b>Release Date:</b> {{ movie.release_date }}</span>
+										&nbsp; &nbsp; &nbsp; &nbsp;
+									<b>Rating:</b>
+									<span class="rating rating_{{movie.vote_average}}" data-rating="{{ movie.vote_average }}">
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+									<span> &nbsp;{{movie.vote_average}}/5</span>
+									</span>
+								</div>
+								<div class="newarrival_text" style="margin-bottom:10px">
+									<b>Overview: </b>
+									<p>{{ movie.overview }}</p>
+									<b>Movie Shows Available At:</b>
+								</div>
+								{% for threatre in movieThreatreList%}
+								{%if threatre.imdbid == movie.imdbId %}
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Name:&nbsp;</b>{{threatre.threater_name}}</span> 
+								</div>
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Showtime:&nbsp;</b>{{threatre.movie_showtime}}</span> 
+								</div>
+								<div class="newarrival_name" style="margin-bottom:2px">
+									<span><b>Address:&nbsp;</b>{{threatre.threater_streetaddress}}</span>
+									<span>,{{threatre.threater_addressLocality}} </span>
+									<span>{{threatre.threater_addressRegion}} </span>
+									<span>{{threatre.threater_postalCode}}</span> 
+									<span><b>Phone:&nbsp;</b>{{threatre.threater_telephone}}</span> 
+								</div>
+								<br>
+								{%endif%}
+								{%endfor%}
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+    
 
-<style>
-    form {
-    width:50%;
-    height:100px;
-    margin:auto;
-    position:relative;
-    }
-      input {
-    width:100%;
-    height: 25px;
-    position:relative;
-      }
-    </style> -->
+	<!-- Gallery -->
 
-<!-- <form method='post' align = "center">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form> -->
+	<div class="gallery">
+		<div class="gallery_image" style="background-image:url(/static/images/gallery_7.jpg)"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div class="gallery_title text-center">
+						<ul>
+							<li><a href="#">#showtimefinder</a></li>
+							<li><a href="#">#showtimeinstagram</a></li>
+							<li><a href="#">#movietickets</a></li>
+						</ul>
+					</div>
+					<div class="gallery_text text-center">Follow us on instgram and twitter for updates
+					<div class="footer_social">
+						<ul>
+							<li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-reddit-alien" aria-hidden="true"></i></a></li>
+							<li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						</ul>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="gallery_slider_container">
+			
+			<!-- Gallery Slider -->
+			<div class="owl-carousel owl-theme gallery_slider">
+				
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.0}}">
+						<img src="{{popular_movies.0}}" alt="">
+					</a>
+				</div>
 
-    <div class="container">
-    <form method='post' clas='form-class'>
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></i></button>
-    </form>
-    </div>
-    <br>
-    <br>
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.1}}">
+						<img src="{{popular_movies.1}}" alt="">
+					</a>
+				</div>
 
-    <table class="table table-striped">
-        <tr>
-            <th>Theatre Name</th>
-            <th>Address</th>
-            <th>Contact </th>
-            <th> Poster</th>
-            <th> Name</th>
-            <th> Duration</th>
-            <th> Rating</th>
-            <th> Showtime</th>
-            <th> Showdate</th>
-          </tr>
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.2}}">
+						<img src="{{popular_movies.2}}" alt="">
+					</a>
+				</div>
 
-          {% for movielisttype in movielist|slice:":1" %}
-            {% for movielistall in movielisttype|slice:":5" %}
-            <tr>
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.3}}">
+						<img src="{{popular_movies.3}}" alt="">
+					</a>
+				</div>
 
-              {% for movieinfo in movielistall|slice:"3:" %}
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.4}}">
+						<img src="{{popular_movies.4}}" alt="">
+					</a>
+				</div>
 
-              <td>{{ movielistall.0 }}</td>
+				<!-- Gallery Item -->
+				<div class="owl-item gallery_item">
+					<a class="colorbox" href="{{popular_movies.5}}">
+						<img src="{{popular_movies.5}}" alt="">
+					</a>
+				</div>
+			</div>
+		</div>	
+	</div>
 
-              <td>{{ movielistall.1 }}</td>
-
-              <td>{{ movielistall.2 }}</td>
-
-              <td><img src = "{{ movieinfo.1 }}"></td>
-
-              <td>{{ movieinfo.0 }}</td>
-
-              <td>{{ movieinfo.2 }}</td>
-
-              <td>{{ movieinfo.3 }}</td>
-
-              <td>{{ movieinfo.4 }}</td>
-
-              <td>{{ movieinfo.5 }}</td>
-            </tr>
-            {% endfor %}
-
-            {% endfor %}
-          {% endfor %}
-    </table>
-  </div>
+	
+</div>
 {% endblock %}
