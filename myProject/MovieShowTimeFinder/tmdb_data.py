@@ -64,7 +64,7 @@ def sendtoDB(host, uid, pwd, db):
         print(df_links.head())
         print(df_keywords.head())
         print(df_credits.head())
-        
+    
         cxn = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+host+';DATABASE='+dbname+';UID='+uid+';PWD='+pwd)
         cursor = cxn.cursor()
         # drop preexisting tables
