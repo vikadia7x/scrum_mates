@@ -54,7 +54,7 @@ class EditProfileForm(ModelForm):
 )
 
 class EditUserProfileForm(ModelForm):
-
+    zipcode = forms.CharField()
     class Meta:
         model = UserProfile
         fields = (
