@@ -31,7 +31,6 @@ from operator import itemgetter
 
 def createDBConnection():
     server = config.DATABASE_HOST_SERVER
-    print(server)
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
@@ -466,6 +465,13 @@ def AboutUs(request):
     return render(request,'AboutUs.html')
 
 def home(request):
+    # cnxn = createDBConnection()
+    # cursor = cnxn.cursor()
+    # print(str(request.user))
+    # infoString = "TRUNCATE TABLE showtimefinder_recommendedmovie"
+    # print(infoString)
+    # print(cursor.execute(infoString))
+    # cursor.execute(infoString)
     os.system("cd ..")
     os.system("python final_recommendation.py")
     os.system("cd showtimefinder")
@@ -518,6 +524,9 @@ def home(request):
             getmovielist.append(uSelect[i].get('imdb_id'))
             i = i+1
 
+        #print list
+        #print(getmovielist)
+
         #movie theatre list
         movieThreatreList = scrapeThreatre(set(getmovielist),text)
         #get movie data from db to display
@@ -525,8 +534,6 @@ def home(request):
 
         res= sorted(movie_info_list, key=itemgetter('popularity'),reverse=True)
         # res2= sorted(res1, key=itemgetter('popularity'),reverse=True)
-
-        #print(res)
 
         args = {
             'movie_info_list' : res,
@@ -620,7 +627,7 @@ def scrapePosterInfoData(pickpopularmoviesresp):
     html_soup = BeautifulSoup(pickpopularmoviesresp.text, 'html.parser')
     poster_link = []
     poster = html_soup.find_all('h3', class_ = 'lister-item-header')
-    for item in poster[:30]:
+    for item in poster:
         movieid = item.find('a')
         imdbid = movieid['href'].split('/')[3]
         query_meta = "SELECT poster_path FROM [dbo].[NowPlayingData] Where imdb_id='" + imdbid +"'"
