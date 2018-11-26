@@ -26,16 +26,18 @@ import config, pyodbc, datetime, ast, math, os
 import threading
 import multiprocessing
 import threading, queue
-import json
 from operator import itemgetter
+
 
 def createDBConnection():
     server = config.DATABASE_HOST_SERVER
+    print(server)
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
-    driver='/usr/local/lib/libmsodbcsql.13.dylib'
-    cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+    #driver='/usr/local/lib/libmsodbcsql.13.dylib'
+    # driver = {ODBC Driver 13 for SQL Server}
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     return cnxn
 
 def signup(request):
@@ -302,7 +304,7 @@ def select(request):
         listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
         if(Family==1):
             listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
-        
+
         listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
         if(Horror==1):
             listmovie_Horror = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
@@ -388,7 +390,7 @@ def landing(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -396,7 +398,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -434,7 +436,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -466,7 +468,7 @@ def home(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -474,7 +476,7 @@ def home(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -509,7 +511,7 @@ def home(request):
         while (i!=len(uSelect)):
             getmovielist.append(uSelect[i].get('imdb_id'))
             i = i+1
-        
+
         #movie theatre list
         movieThreatreList = scrapeThreatre(set(getmovielist),text)
         #get movie data from db to display
@@ -524,14 +526,14 @@ def home(request):
             'movieThreatreList' : movieThreatreList,
             'form': form
         }
-        return render(request, 'home.html', args) 
+        return render(request, 'home.html', args)
 
 
 def scrapeMovie(response,text):
     movie_list = []
     html_soup= BeautifulSoup(response.text, 'html.parser')
     soupdata = html_soup.find_all('div', class_ = 'lister-item-image ribbonize')
-    for item in soupdata:
+    for item in soupdata[:5]:
         imdbId = item['data-tconst']
         movie_list.append(imdbId)
     return movie_list
@@ -633,87 +635,16 @@ def getMovieInfoFromDB(imdbList):
         for row in result :
             movie_info = {
                 'title': row[0],
-                'overview': row[1],
-                'release_date': datetime.datetime.strftime(row[2],'%b. %d %Y'),
-                'runtime': row[3],
-                'vote_average': int(math.floor(float(row[4]))/2),
-                'poster': "https://image.tmdb.org/t/p/w500" + row[5],
-                'poster_path' : "https://image.tmdb.org/t/p/original/"+row[5],
-                'imdbId': row[6]
+                'popularity':row[1],
+                'overview': row[2],
+                'release_date': datetime.datetime.strftime(row[3],'%b. %d %Y'),
+                'runtime': row[4],
+                'vote_average': int(math.floor(float(row[5]))/2),
+                'poster': "https://image.tmdb.org/t/p/w500" + row[6],
+                'imdbId': row[7]
             }
             movie_info_list.append(movie_info)
     return movie_info_list
- 
+
 def movieInfo(request):
-   query = request.GET.get('id')
-   api_key = config.TMDB_API_KEY
-   # connect to the ODBC database
-   cxn = createDBConnection()
-   cursor = cxn.cursor()
-    
-   infoString = "SELECT budget, genres, homepage, original_title, overview, poster_path, production_companies, production_countries, release_date, revenue, runtime, spoken_languages, tagline, title FROM [dbo].[NowPlayingData] WHERE imdb_id='"+ query +"'"
-   cursor.execute(infoString)
-   result1 = cursor.fetchall()
-   movieIdString = "SELECT movieId, tmdbId FROM [dbo].[NowPlayingLinks] WHERE imdbId='"+query+"'"
-   cursor.execute(movieIdString)
-   result2 = cursor.fetchall()
-   castString = "SELECT cast, crew FROM [dbo].[NowPlayingCredits] WHERE id='"+str(result2[0][1])+"'" #tmdbId
-   cursor.execute(castString)
-   result3 = cursor.fetchall()
-   
-   #get the poster path image
-   posterlink = "https://image.tmdb.org/t/p/original/"+result1[0][5]
-
-   #Get video info:
-   video = requests.get("https://api.themoviedb.org/3/movie/"+query+"/videos?api_key="+api_key+"&language=en-US").json()
-   videoLink= "https://www.youtube.com/embed/"
-   videoLink = videoLink+str(video["results"][0]["key"])
-  
-
-   # convert genres to a list
-   genre = []
-   lang = []
-   company =[]
-   countries=[]
-   # Split string values
-   langList =result1[0][11].split()
-   genreList= result1[0][1].split()
-   companyList = result1[0][6].split(",")
-   countryList = result1[0][7].split()
-   for i in range(len(genreList)):
-       if(genreList[i] == "'name':"):
-           genre.append(genreList[i+1][1:-3]) # remove unnecessary elements
-    
-   for i in range(len(langList)):
-        if(langList[i]=="'name':"):
-            lang.append(langList[i+1][1:-3])
-   
-   for i in range(len(companyList)):
-       if("'name':" in companyList[i]):
-            company.append(companyList[i][10:-1])
-    
-   for i in range(len(countryList)):
-        if(countryList[i] == "'name':"):
-            countries.append(countryList[i-1][1:-2])
-      
-   context = {
-       'budget' : result1[0][0],
-       'genres' : genre,
-       'homepage' : result1[0][2],
-       'originalTitle' : result1[0][3],
-       'overview': result1[0][4],
-       'productionCompanies': company,
-       'productionCountries' : countries,
-       'releaseDate' : result1[0][8],
-       'revenue' : result1[0][9],
-       'runtime' : result1[0][10],
-       'spokenLanguages' : lang,
-       'tagline' : result1[0][12],
-       'title' : result1[0][13],
-       'movieId' : result2[0][0],
-       'movieCast' : result3[0][0],
-       'movieCrew' : result3[0][1],
-       'posterPath' : posterlink,
-       'video' : videoLink
-   } 
-   return render(request,'movie_info.html', context)
+    return render(request,'AboutUs.html')

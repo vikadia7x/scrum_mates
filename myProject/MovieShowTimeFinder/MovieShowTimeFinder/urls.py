@@ -20,13 +20,14 @@ from django.contrib.auth import views as auth_views
 
 from django.views.generic.base import TemplateView
 from django.conf.urls import url
+from showtimefinder.forms import EmailValidationOnForgotPassword
 
 
 urlpatterns = [
     path('',views.landing,name='landing'),
     path('admin/', admin.site.urls),
     path('', views.landing, name='landing'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/logout/', include('django.contrib.auth.urls')),
     path('login.html', views.login_page, name='login_page'),
     path('select.html', views.select, name='select'),
     path('signup.html', views.signup, name='signup'),
@@ -39,11 +40,18 @@ urlpatterns = [
     url(r'^movie_info/$', views.movieInfo, name='movieInfo'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
-  
+    url(r'', include('social_django.urls', namespace='social')),
+    # url(r'^logout/$', views.logoutView, name='logout'),
 
 
-    # path(r'^accounts/', auth_views.password_reset, name='password_reset_form'),
-    # url(r'^password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
-    # url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
-    # url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
+    path('accounts/password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
+    path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(form_class=EmailValidationOnForgotPassword), name='password_reset'),
+
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+
+
 ]
