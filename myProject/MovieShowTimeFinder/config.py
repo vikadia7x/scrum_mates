@@ -1,8 +1,0 @@
-AZURE_SEND_GRID = 'azure_85bc40b31b8096403bf828caaae719fe@azure.com'
-AZURE_SEND_GRID_PASSWORD = 'Azure@Cloud1'
-DATABASE_HOST_SERVER = 'showtimefinder.database.windows.net'
-DATABASE_PASSWORD = 'Azure@Cloud'
-DATABASE_NAME = 'showtimefinder_db'
-DATABASE_USER = 'scrum_mates@showtimefinder'
-DJANGO_SECRET_KEY = 'cx=@#dlyr)-%zcnkknn!jpkk8q(5^4+uf1u=xfwnl0r@zh3!9w'
-TMDB_API_KEY = 'ce4ca93f8fa013d449e34523c2aff0bb'
