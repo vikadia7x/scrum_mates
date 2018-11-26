@@ -37,7 +37,7 @@ urlpatterns = [
     path('AboutUs.html', views.AboutUs, name='AboutUs'),
     path('landing.html', views.landing, name='landing'),
     path('edit_profile.html', views.edit_profile, name='edit_profile'),
-    path('movie_info.html', views.movieInfo, name='movieInfo'),
+    url(r'^movie_info/$', views.movieInfo, name='movieInfo'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
     url(r'', include('social_django.urls', namespace='social')),
