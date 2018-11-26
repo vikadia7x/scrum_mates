@@ -198,8 +198,9 @@ def sendtoDB(host, uid, pwd, db):
                 from showtimefinder_recommendedmovie b
                 where b.popularity in (select top (3) popularity 
                                     from showtimefinder_recommendedmovie  
+									where userid = '%s'
                                     order by popularity Desc)
-                and b.userid = '%s' ''' %username,
+                and b.userid = '%s' ''' %(username, username),
                 #params = ,
                 con=cxn)
 

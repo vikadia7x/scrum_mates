@@ -67,7 +67,7 @@ def signup(request):
         return render(request, 'signup.html', {'form': form})
 
 
-def activate(request, uidb64, token):
+def activate(request, uidb64, token, backend='django.contrib.auth.backends.ModelBackend'):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -77,7 +77,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.userprofile.email_confirmed = True
         user.save()
-        login(request, user)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return HttpResponse('Account activated successfully')
     else:
         return HttpResponse('Activation link is invalid!')
