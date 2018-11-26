@@ -48,9 +48,22 @@ FROM ubuntu:16.04
    RUN pip install gunicorn
    RUN pip install whitenoise
 
-   RUN python /code/manage.py collectstatic --noinput
+   ENV SOCIAL_AUTH_TWITTER_KEY = 'QQl3H4qqbiHOIsKpcHCN3ZlmH'
+   ENV SOCIAL_AUTH_TWITTER_SECRET = '8kozVUQUITVR3g8PHW43gb1sSI7Iaf8llwpBUctti8IzLMMNC3'
 
-   ENV 
+   ENV SOCIAL_AUTH_FACEBOOK_KEY = '314676229128348'  # App ID
+   ENV SOCIAL_AUTH_FACEBOOK_SECRET = 'dd9c910c48003e902d8f029f925a3bf5'
+
+
+   ENV SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '770133029902-gb95pd64gutdkdgvrm73sd5c0p2kc2jv.apps.googleusercontent.com'
+   ENV SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'bBetAit4s_JuIG2q-TzlMWPK'
+
+   ENV APP_ID='69f71ca9-d764-4aa5-996b-293c580b7995'
+   ENV SECRET_APP_KEY='ocQ7HQP2s5uDE7+/nEWR6Mp3pu1KcAeWbnzS0GILjmE='
+   ENV TENANT_ID='41f88ecb-ca63-404d-97dd-ab0a169fd138'
+   ENV VAULT_URL='https://showtimefinderkeyvault.vault.azure.net/'
+
+   RUN python /code/manage.py collectstatic --noinput
 
    #Layer for exposing the app through gunicorn
    EXPOSE 8000
