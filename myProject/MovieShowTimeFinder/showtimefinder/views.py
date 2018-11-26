@@ -625,7 +625,8 @@ def movieInfo(request):
    #Get video info:
    video = requests.get("https://api.themoviedb.org/3/movie/"+query+"/videos?api_key="+api_key+"&language=en-US").json()
    videoLink= "https://www.youtube.com/embed/"
-   videoLink = videoLink+str(video["results"]["key"])
+   for vid in video["results"]:
+       videoLink = videoLink+str(vid["key"])
   
 
    # convert genres to a list
