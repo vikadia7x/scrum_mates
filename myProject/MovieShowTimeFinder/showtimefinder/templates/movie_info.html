@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{%block content%}
+<div class="movieImage" style="background-color:black; border-style:hidden;">
+    <img src="{{posterPath}}" style="width:50%; height:720px; margin-left:auto; margin-right:auto; display:block;" alt=""> 
+</div>
+<div class="column" style="float:right; width:30%; height:100%; background-color:grey;">
+    <h2 style="color:black;">General Information:</h2><br><br>
+    <h3 style="color:black;"><b>Title: </b>{{title}}</h3><br>
+    <h3 style="color:black;"><b>Original Title: </b>{{originalTitle}}</h3>
+    {%if tagline != ""%}
+    <h3 style ="color:black;"><i>"{{tagline}}"</i></h3><br>
+    {%endif%}
+    <h3 style="color:black;"><b>Id: </b> {{movieId}}</h3><br>
+    <h3 style="color:black;"><b>Release Date: </b>{{releaseDate}}</h3><br>
+    <h3 style="color:black;"><b>Genres:</b> <br>
+        {%for item in genres%}
+        {{item}} <br>
+        {%endfor%}
+    </h3><br>
+    <h3 style="color:black;"><b>Website: </b> <a href="{{homepage}}">{{homepage}}</a></h3><br>
+    <h3 style="color:black;"><b>Budget: </b> {{budget}}</h3><br>
+    <h3 style="color:black;"><b>Revenue: </b> {{revenue}}</h3><br>
+    <h3 style="color:black;"><b>Runtime: </b>{{runtime}}</h3><br>
+    <h3 style="color:black;"><b>Available Languages: </b><br>
+        {%for item in spokenLanguages%}
+        {{item}}<br>
+        {%endfor%}
+    </h3><br>
+    <h3 style="color:black;"><b>Produced By: </b>  <br>
+        {%for item in productionCompanies%}
+        {{item}} <br>
+        {%endfor%}
+    </h3>
+    <h3 style="color:black;"><b>Countries Produced in:</b>  <br>
+        {%for item in productionCountries%}
+        {{item}}<br>
+        {%endfor%}
+    </h3>
+</div>
+
+<div class="right-column" style="float:left; width:70%; height:100%;">
+        <h2><b>"Summary: "</b></h2>
+        <br>
+        <h3 style="color:black;">{{overview}}</h3>
+        <br>
+        <h3 style="color:black;"><b>Video Link: </b><br>
+            <iframe width="1175" height="676" src={{video}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </h3>
+        <!-----
+        <h1><b>"Cast: "</b></h1>
+        <br>
+        <h2><b>{{movieCast}}</b></h2>
+        <br>
+        <h1><b>"Crew: "</b></h1>
+        <br>
+        <h2><b>{{movieCrew}}</b></h2>
+        <br>
+        --->
+</div>
+{% endblock %}
