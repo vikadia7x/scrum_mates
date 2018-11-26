@@ -59,7 +59,7 @@ def signup(request):
             'token': account_activation_token.make_token(user),
             })
             send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
-            return redirect('landing.html')
+        return redirect('landing.html')
     else:
         form = SignUpForm()
         return render(request, 'signup.html', {'form': form})
@@ -172,6 +172,9 @@ def userprofile(request):
     return render(request,'userprofile.html', userdetails)
 
 def select(request):
+    user = User.objects.filter(username=request.user).values()
+    #userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+    UserSelectMovies.objects.filter(userId = user[0].get('id')).update(isMovieRec = 0)
     if request.method == 'POST':
         form = MovieSelection(request.POST)
         if form.is_valid():
@@ -461,6 +464,9 @@ def AboutUs(request):
     return render(request,'AboutUs.html')
 
 def home(request):
+    os.system("cd ..")
+    os.system("python final_recommendation.py")
+    os.system("cd showtimefinder")
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
         if form.is_valid():
@@ -497,13 +503,13 @@ def home(request):
         }
         return render(request, 'home.html', args)
     else:
-        os.system("python hello.py")
+        #os.system("python hello.py")
         form = SearchForm()
         user = User.objects.filter(username=request.user).values()
         userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
         zipcode = userprofile[0].get('zipcode')
         text = zipcode
-        uSelect = RecommendedMovie.objects.filter(userId = request.user).values()
+        uSelect = RecommendedMovie.objects.filter(userId = request.user).order_by('time_stamp').values()[:5]
         getmovielist = []
         i = 0
         while (i!=len(uSelect)):
@@ -516,8 +522,9 @@ def home(request):
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
         res= sorted(movie_info_list, key=itemgetter('popularity'),reverse=True)
+        # res2= sorted(res1, key=itemgetter('popularity'),reverse=True)
 
-        print(res)
+        #print(res)
 
         args = {
             'movie_info_list' : res,
