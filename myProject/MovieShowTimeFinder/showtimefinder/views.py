@@ -26,6 +26,7 @@ import config, pyodbc, datetime, ast, math, os
 import threading
 import multiprocessing
 import threading, queue
+import json
 
 
 def createDBConnection():
@@ -488,7 +489,7 @@ def scrapeMovie(response,text):
     movie_list = []
     html_soup= BeautifulSoup(response.text, 'html.parser')
     soupdata = html_soup.find_all('div', class_ = 'lister-item-image ribbonize')
-    for item in soupdata[:5]:
+    for item in soupdata:
         imdbId = item['data-tconst']
         movie_list.append(imdbId)
     return movie_list
@@ -595,10 +596,82 @@ def getMovieInfoFromDB(imdbList):
                 'runtime': row[3],
                 'vote_average': int(math.floor(float(row[4]))/2),
                 'poster': "https://image.tmdb.org/t/p/w500" + row[5],
+                'poster_path' : "https://image.tmdb.org/t/p/original/"+row[5],
                 'imdbId': row[6]
             }
             movie_info_list.append(movie_info)
     return movie_info_list
  
 def movieInfo(request):
-    return render(request,'AboutUs.html')
+   query = request.GET.get('id')
+   api_key = config.TMDB_API_KEY
+   # connect to the ODBC database
+   cxn = createDBConnection()
+   cursor = cxn.cursor()
+    
+   infoString = "SELECT budget, genres, homepage, original_title, overview, poster_path, production_companies, production_countries, release_date, revenue, runtime, spoken_languages, tagline, title FROM [dbo].[NowPlayingData] WHERE imdb_id='"+ query +"'"
+   cursor.execute(infoString)
+   result1 = cursor.fetchall()
+   movieIdString = "SELECT movieId, tmdbId FROM [dbo].[NowPlayingLinks] WHERE imdbId='"+query+"'"
+   cursor.execute(movieIdString)
+   result2 = cursor.fetchall()
+   castString = "SELECT cast, crew FROM [dbo].[NowPlayingCredits] WHERE id='"+str(result2[0][1])+"'" #tmdbId
+   cursor.execute(castString)
+   result3 = cursor.fetchall()
+   
+   #get the poster path image
+   posterlink = "https://image.tmdb.org/t/p/original/"+result1[0][5]
+
+   #Get video info:
+   video = requests.get("https://api.themoviedb.org/3/movie/"+query+"/videos?api_key="+api_key+"&language=en-US").json()
+   videoLink= "https://www.youtube.com/embed/"
+   videoLink = videoLink+str(video["results"]["key"])
+  
+
+   # convert genres to a list
+   genre = []
+   lang = []
+   company =[]
+   countries=[]
+   # Split string values
+   langList =result1[0][11].split()
+   genreList= result1[0][1].split()
+   companyList = result1[0][6].split(",")
+   countryList = result1[0][7].split()
+   for i in range(len(genreList)):
+       if(genreList[i] == "'name':"):
+           genre.append(genreList[i+1][1:-3]) # remove unnecessary elements
+    
+   for i in range(len(langList)):
+        if(langList[i]=="'name':"):
+            lang.append(langList[i+1][1:-3])
+   
+   for i in range(len(companyList)):
+       if("'name':" in companyList[i]):
+            company.append(companyList[i][10:-1])
+    
+   for i in range(len(countryList)):
+        if(countryList[i] == "'name':"):
+            countries.append(countryList[i-1][1:-2])
+      
+   context = {
+       'budget' : result1[0][0],
+       'genres' : genre,
+       'homepage' : result1[0][2],
+       'originalTitle' : result1[0][3],
+       'overview': result1[0][4],
+       'productionCompanies': company,
+       'productionCountries' : countries,
+       'releaseDate' : result1[0][8],
+       'revenue' : result1[0][9],
+       'runtime' : result1[0][10],
+       'spokenLanguages' : lang,
+       'tagline' : result1[0][12],
+       'title' : result1[0][13],
+       'movieId' : result2[0][0],
+       'movieCast' : result3[0][0],
+       'movieCrew' : result3[0][1],
+       'posterPath' : posterlink,
+       'video' : videoLink
+   } 
+   return render(request,'movie_info.html', context)
