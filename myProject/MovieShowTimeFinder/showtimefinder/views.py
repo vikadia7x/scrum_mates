@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
 from django.urls import reverse
-from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm
+from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm, EditUserProfileForm
 from showtimefinder.forms import SearchForm, MovieSelection
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -26,16 +26,18 @@ import config, pyodbc, datetime, ast, math, os
 import threading
 import multiprocessing
 import threading, queue
-import json
+from operator import itemgetter
 
 
 def createDBConnection():
     server = config.DATABASE_HOST_SERVER
+    print(server)
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
-    driver='/usr/local/lib/libmsodbcsql.13.dylib'
-    cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+    #driver='/usr/local/lib/libmsodbcsql.13.dylib'
+    # driver = {ODBC Driver 13 for SQL Server}
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     return cnxn
 
 def signup(request):
@@ -59,7 +61,7 @@ def signup(request):
             'token': account_activation_token.make_token(user),
             })
             send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
-            return redirect('landing.html')
+        return redirect('landing.html')
     else:
         form = SignUpForm()
         return render(request, 'signup.html', {'form': form})
@@ -107,7 +109,74 @@ def login_page(request):
         context = {'form': form}
         return render(request, 'login.html', context)
 
+# def edit_profile(request):
+#     if request.method == 'POST':
+#         form = EditProfileForm(request.POST, instance=request.user)
+#         if form.is_valid():
+#             zipcode = form.cleaned_data.get('zipcode')
+#             dateofbirth = form.cleaned_data.get('dateofbirth')
+#             user = User.objects.filter(username=request.user).values()
+#             UserProfile.objects.filter(user_id = user[0].get('id')).update(zipcode = zipcode,dateofbirth=dateofbirth)
+
+#         return redirect('userprofile.html')
+#     else:
+#         form = EditProfileForm(instance=request.user.userprofile)
+#         args = {'form': form}
+#         return render(request, 'edit_profile.html', args)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form1 = EditProfileForm(request.POST,instance = request.user)
+        form2 = EditUserProfileForm(request.POST,instance = request.user.userprofile)
+        if form1.is_valid():
+            if(form1.cleaned_data.get('first_name') is not None):
+                firstname = form1.cleaned_data.get('first_name')
+                print(firstname)
+            else:
+                user = User.objects.filter(username=request.user).values()
+                firstname = user[0].get('first_name')
+
+            if(form1.cleaned_data.get('last_name') is not None):
+                lastname = form1.cleaned_data.get('last_name')
+            else:
+                user = User.objects.filter(username=request.user).values()
+                lastname = user[0].get('last_name')
+
+            if(form1.cleaned_data.get('email') is not None):
+                email = form1.cleaned_data.get('email')
+            else:
+                user = User.objects.filter(username=request.user).values()
+                email = user[0].get('email')
+            User.objects.filter(username=request.user).update(first_name = firstname, last_name = lastname, email = email)
+        if form2.is_valid():
+            zipcode = form2.cleaned_data.get('zipcode')
+            print(zipcode)
+            dateofbirth = form2.cleaned_data.get('dateofbirth')
+            user = User.objects.filter(username=request.user).values()
+            UserProfile.objects.filter(user_id = user[0].get('id')).update(zipcode = zipcode,dateofbirth=dateofbirth)
+            print(UserProfile.objects.filter(user_id = user[0].get('id')))
+        return redirect('userprofile.html')
+
+    else:
+        form1 = EditProfileForm(instance = request.user)
+        form2 = EditUserProfileForm(instance = request.user.userprofile)
+        args = {'form1': form1, 'form2': form2}
+        return render(request, 'edit_profile.html', args)
+
+def userprofile(request):
+    user = User.objects.filter(username=request.user).values()
+    userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+    zipcode = userprofile[0].get('zipcode')
+    dob = userprofile[0].get('dateofbirth')
+    userdetails = {
+    'zipcode': zipcode,
+    'dateofbirth': dob}
+    return render(request,'userprofile.html', userdetails)
+
 def select(request):
+    user = User.objects.filter(username=request.user).values()
+    #userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+    UserSelectMovies.objects.filter(userId = user[0].get('id')).update(isMovieRec = 0)
     if request.method == 'POST':
         form = MovieSelection(request.POST)
         if form.is_valid():
@@ -238,7 +307,7 @@ def select(request):
         listmovie_Family = MovieGenreSelection.objects.filter(Family = None).values()
         if(Family==1):
             listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
-        
+
         listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
         if(Horror==1):
             listmovie_Horror = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
@@ -324,7 +393,7 @@ def landing(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -332,7 +401,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -370,7 +439,7 @@ def landing(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -393,42 +462,19 @@ def landing(request):
         }
         return render(request, 'landing.html', args)
 
-def userprofile(request):
-    user = User.objects.filter(username=request.user).values()
-    userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
-    zipcode = userprofile[0].get('zipcode')
-    dob = userprofile[0].get('dateofbirth')
-    userdetails = {
-    'zipcode': zipcode,
-    'dateofbirth': dob}
-    return render(request,'userprofile.html', userdetails)
-
-def edit_profile(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance=request.user)
-
-        if form.is_valid():
-            user = form.save()
-            current_site = get_current_site(request)
-            subject = 'Your details are Updated'
-            message = render_to_string('UserEdit_email.html')
-            send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
-            return redirect(reverse('userprofile'))
-    else:
-        form = EditProfileForm(instance=request.user)
-        args = {'form': form}
-        return render(request, 'edit_profile.html', args)
-
 def AboutUs(request):
     return render(request,'AboutUs.html')
 
 def home(request):
+    os.system("cd ..")
+    os.system("python final_recommendation.py")
+    os.system("cd showtimefinder")
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        
+
         #call for imdbid in a list
         url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
@@ -436,7 +482,7 @@ def home(request):
 
         #call for getting threatre list by passing movielist
         movieThreatreList = scrapeThreatre(getmovielist,text)
-        
+
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
@@ -459,7 +505,7 @@ def home(request):
         }
         return render(request, 'home.html', args)
     else:
-        os.system("python hello.py")
+        #os.system("python hello.py")
         form = SearchForm()
         user = User.objects.filter(username=request.user).values()
         userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
@@ -471,25 +517,30 @@ def home(request):
         while (i!=len(uSelect)):
             getmovielist.append(uSelect[i].get('imdb_id'))
             i = i+1
-        
+
         #movie theatre list
-        movieThreatreList = scrapeThreatre(getmovielist,text)
+        movieThreatreList = scrapeThreatre(set(getmovielist),text)
         #get movie data from db to display
         movie_info_list = getMovieInfoFromDB(set(getmovielist))
 
+        res= sorted(movie_info_list, key=itemgetter('popularity'),reverse=True)
+        # res2= sorted(res1, key=itemgetter('popularity'),reverse=True)
+
+        #print(res)
+
         args = {
-            'movie_info_list' : movie_info_list,
+            'movie_info_list' : res,
             'movieThreatreList' : movieThreatreList,
             'form': form
         }
-        return render(request, 'home.html', args) 
+        return render(request, 'home.html', args)
 
 
 def scrapeMovie(response,text):
     movie_list = []
     html_soup= BeautifulSoup(response.text, 'html.parser')
     soupdata = html_soup.find_all('div', class_ = 'lister-item-image ribbonize')
-    for item in soupdata:
+    for item in soupdata[:5]:
         imdbId = item['data-tconst']
         movie_list.append(imdbId)
     return movie_list
@@ -513,7 +564,7 @@ def scrapeThreatre(movielist, text):
             else:
                 movie_showdate = item.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
             if(item.find('a', class_ = 'btn2 btn2_simple medium') is None):
-                movie_showdate = 'NA'
+                movie_showtime = 'NA'
             else:
                 movie_showtime = item.find('a', class_ = 'btn2 btn2_simple medium')['data-displaytimes']
             movie_info = {
@@ -585,23 +636,24 @@ def getMovieInfoFromDB(imdbList):
     cursor = cnxn.cursor()
     movie_info_list = []
     for item in imdbList:
-        query_meta = "SELECT title, overview, release_date,runtime,vote_average,poster_path,imdb_id FROM [dbo].[NowPlayingData] Where imdb_id='" + item +"'"
+        query_meta = "SELECT title, convert(float,popularity) as p, overview, release_date,runtime,vote_average,poster_path,imdb_id FROM [dbo].[NowPlayingData] Where imdb_id='" + item +"'"
         cursor.execute(query_meta)
         result = cursor.fetchall()
         for row in result :
             movie_info = {
                 'title': row[0],
-                'overview': row[1],
-                'release_date': datetime.datetime.strftime(row[2],'%b. %d %Y'),
-                'runtime': row[3],
-                'vote_average': int(math.floor(float(row[4]))/2),
-                'poster': "https://image.tmdb.org/t/p/w500" + row[5],
-                'poster_path' : "https://image.tmdb.org/t/p/original/"+row[5],
-                'imdbId': row[6]
+                'popularity':row[1],
+                'overview': row[2],
+                'release_date': datetime.datetime.strftime(row[3],'%b. %d %Y'),
+                'runtime': row[4],
+                'vote_average': int(math.floor(float(row[5]))/2),
+                'poster': "https://image.tmdb.org/t/p/w500" + row[6],
+                'poster_path' : "https://image.tmdb.org/t/p/original/"+row[6],
+                'imdbId': row[7]
             }
             movie_info_list.append(movie_info)
     return movie_info_list
- 
+
 def movieInfo(request):
    query = request.GET.get('id')
    api_key = config.TMDB_API_KEY

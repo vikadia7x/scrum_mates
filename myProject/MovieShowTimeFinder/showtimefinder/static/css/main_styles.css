@@ -233,7 +233,7 @@ section
 .section_title
 {
 	font-family: 'Lucida', serif;
-	font-size: 60px;
+	font-size: 50px;
 	text-transform: uppercase;
 	color: #2f2f2f;
 	margin-top: -4px;
@@ -784,8 +784,8 @@ section
 }
 .test_image
 {
-	width: 100px;
-	height: 100px;
+	width: 200px;
+	height: 200px;
 	border-radius: 50%;
 	overflow: hidden;
 	margin: 0 auto;
