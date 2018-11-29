@@ -11,6 +11,7 @@ import pyodbc
 import os
 import datetime as dt
 import config
+import sys
 
 
 def get_director(x):
@@ -183,25 +184,34 @@ def flow():
 
         print(user_recommended.head(100))
 
-        for index,row in user_recommended.iterrows():
+        for index,row in userSelectedMovies.iterrows():
             cursor.execute("SET IDENTITY_INSERT [dbo].[showtimefinder_recommendedmovie] ON;")
+            cursor.execute("Delete from [dbo].[showtimefinder_recommendedmovie] where userid = ?",arg)
+            cnxn.commit()
+
+        for index,row in user_recommended.iterrows(): 
             cursor.execute("INSERT INTO [dbo].[showtimefinder_recommendedmovie]([title],[flag],[id],[imdb_id],[year],[popularity],[original_movie],[time_stamp],[userId]) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", row['title'],row['flag'],row['id'],row['imdb_id'],row['year'],row['popularity'],row['orginal_movie'],row['time_stamp'],row['userId']) 
-            cursor.execute("UPDATE [dbo].[showtimefinder_userselectmovies] SET isMovieRec = ?",1)         
+            cursor.execute("UPDATE [dbo].[showtimefinder_userselectmovies] SET isMovieRec = ?",1) 
             cnxn.commit()
 
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
+    temp_arg = sys.argv
+    print(type(temp_arg[1]))
+    arg = temp_arg[1]
+    print(arg)
     print(config.DATABASE_HOST_SERVER)
     server = config.DATABASE_HOST_SERVER
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
-    driver='/usr/local/lib/libmsodbcsql.13.dylib'
+    driver='{ODBC Driver 13 for SQL Server}'
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
 
     userSelectedMovies = pd.DataFrame()
-    query_userselected = "SELECT * FROM [dbo].[showtimefinder_userselectmovies] WHERE isMovieRec = 0"
+    query_userselected = "SELECT * FROM [dbo].[showtimefinder_userselectmovies] WHERE isMovieRec = 0 and userid ='"+arg+"'"
+    print(query_userselected)
     for chunk in pd.read_sql_query(query_userselected, cnxn, chunksize=10**4):
         userSelectedMovies = pd.concat([userSelectedMovies, chunk])
         print(userSelectedMovies)
@@ -217,7 +227,6 @@ if __name__ == '__main__':
     query_meta = "SELECT A.id, title, release_date, genres, tagline, overview, imdb_id, popularity, [status], vote_average, vote_count, [year], flag, [cast], crew, keywords, cast_size, crew_size, director, [description] FROM [dbo].[processMetadata] A JOIN [dbo].[showtimefinder_userselectmovies] B ON A.id = B.tmdbId"
     for chunk in pd.read_sql_query(query_meta, cnxn, chunksize=10**4):
         metaData = pd.concat([metaData, chunk])
-        print(metaData)
     print(metaData.shape)
 
     nowPlayingMetaData = pd.DataFrame()

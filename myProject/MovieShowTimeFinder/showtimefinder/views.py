@@ -472,8 +472,11 @@ def home(request):
     # print(infoString)
     # print(cursor.execute(infoString))
     # cursor.execute(infoString)
+    command = "python final_recommendation.py " + str(request.user)
+    print(command)
     os.system("cd ..")
-    os.system("python final_recommendation.py")
+    os.system(command)
+    #os.system("python notification.py")
     os.system("cd showtimefinder")
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
