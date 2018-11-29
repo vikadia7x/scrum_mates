@@ -50,8 +50,6 @@ FROM ubuntu:16.04
 
    RUN python /code/manage.py collectstatic --noinput
 
-   ENV 
-
    #Layer for exposing the app through gunicorn
    EXPOSE 8000
    COPY entrypoint.sh /code/

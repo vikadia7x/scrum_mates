@@ -31,7 +31,6 @@ from operator import itemgetter
 
 def createDBConnection():
     server = config.DATABASE_HOST_SERVER
-    print(server)
     database = config.DATABASE_NAME
     username = config.DATABASE_USER
     password = config.DATABASE_PASSWORD
@@ -67,7 +66,7 @@ def signup(request):
         return render(request, 'signup.html', {'form': form})
 
 
-def activate(request, uidb64, token):
+def activate(request, uidb64, token, backend='django.contrib.auth.backends.ModelBackend'):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -77,7 +76,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.userprofile.email_confirmed = True
         user.save()
-        login(request, user)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return HttpResponse('Account activated successfully')
     else:
         return HttpResponse('Activation link is invalid!')
@@ -466,8 +465,18 @@ def AboutUs(request):
     return render(request,'AboutUs.html')
 
 def home(request):
+    # cnxn = createDBConnection()
+    # cursor = cnxn.cursor()
+    # print(str(request.user))
+    # infoString = "TRUNCATE TABLE showtimefinder_recommendedmovie"
+    # print(infoString)
+    # print(cursor.execute(infoString))
+    # cursor.execute(infoString)
+    command = "python final_recommendation.py " + str(request.user)
+    print(command)
     os.system("cd ..")
-    os.system("python final_recommendation.py")
+    os.system(command)
+    #os.system("python notification.py")
     os.system("cd showtimefinder")
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
@@ -518,6 +527,9 @@ def home(request):
             getmovielist.append(uSelect[i].get('imdb_id'))
             i = i+1
 
+        #print list
+        #print(getmovielist)
+
         #movie theatre list
         movieThreatreList = scrapeThreatre(set(getmovielist),text)
         #get movie data from db to display
@@ -525,8 +537,6 @@ def home(request):
 
         res= sorted(movie_info_list, key=itemgetter('popularity'),reverse=True)
         # res2= sorted(res1, key=itemgetter('popularity'),reverse=True)
-
-        #print(res)
 
         args = {
             'movie_info_list' : res,
@@ -620,7 +630,7 @@ def scrapePosterInfoData(pickpopularmoviesresp):
     html_soup = BeautifulSoup(pickpopularmoviesresp.text, 'html.parser')
     poster_link = []
     poster = html_soup.find_all('h3', class_ = 'lister-item-header')
-    for item in poster[:30]:
+    for item in poster:
         movieid = item.find('a')
         imdbid = movieid['href'].split('/')[3]
         query_meta = "SELECT poster_path FROM [dbo].[NowPlayingData] Where imdb_id='" + imdbid +"'"

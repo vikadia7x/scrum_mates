@@ -170,24 +170,26 @@ def sendtoDB(host, uid, pwd, db):
             and a.email_confirmed = 1''',
             con=cxn)
         moviecursor = cxn.cursor()
-        moviecursor.execute('Truncate table user_notification_details;')
+        '''moviecursor.execute('Truncate table user_notification_details;')
         movieinsert = "INSERT INTO user_notification_details(user_id, movie_name, showdate, showtime, cinema) values(?, ?, ?, ?, ?);"
+		print(df_zip)
         for index, row in df_zip.iterrows():
             zipcode = (row['zipcode'])
+            print(zipcode)
             url = 'https://www.imdb.com/showtimes/US/{}'
             response = get(url.format(zipcode))
             li = scrapeData(response)
             for i in range(0, len(li)):
-                moviecursor.execute(movieinsert, str(row['username']), str(li[i][1]), str(li[i][-1]), str(li[i][-2]),
-                                    str(li[i][0]))
-                moviecursor.commit()
+                moviecursor.execute(movieinsert, str(row['username']), str(li[i][1]), str(li[i][-1]), str(li[i][-2]), str(li[i][0]))
+                print("Inserted")
+                moviecursor.commit()'''
 
         # print(li[1])
         # print(li[1][1])
 
         df_user = pd.read_sql_query(
-            'select distinct b.username, b.email email from auth_user b   '
-            'where b.is_active = 1',
+            '''select distinct b.username, b.email email from auth_user b
+            where b.is_active = 1''',
             con=cxn)
 
         for index, row in df_user.iterrows():
@@ -198,8 +200,9 @@ def sendtoDB(host, uid, pwd, db):
                 from showtimefinder_recommendedmovie b
                 where b.popularity in (select top (3) popularity 
                                     from showtimefinder_recommendedmovie  
+									where userid = '%s'
                                     order by popularity Desc)
-                and b.userid = '%s' ''' %username,
+                and b.userid = '%s' ''' %(username, username),
                 #params = ,
                 con=cxn)
 
@@ -211,11 +214,13 @@ def sendtoDB(host, uid, pwd, db):
             for index, row1 in df_movie.iterrows():
                 message = message + "\n Movie name: "+row1['title']+"\n"+"\n Popularity: " + str(row1['popularity']) + "\n"
 
+                movieTite = row1['title'].replace("'", "''")
+                print(movieTite)
                 df_send = pd.read_sql_query(
                     '''select top (1) n.showdate, n.showtime, n.cinema
                       from user_notification_details n
                       where n.movie_name = '%s' 
-                        and user_id = '%s' ''' %(row1['title'], username),
+                        and user_id = '%s' ''' %(movieTite, username),
                     # params = ,
                     con=cxn)
                 print(df_send)
@@ -252,6 +257,12 @@ try:
     dbname = cf.DATABASE_NAME
     user = cf.DATABASE_USER
     password = cf.DATABASE_PASSWORD
+	
+    print(api_key)
+    print(dbname)
+    print(server)
+    print(user)
+    print(password)
 
 
     print(sendtoDB(server, user, password, dbname))

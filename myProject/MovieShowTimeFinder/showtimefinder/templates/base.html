@@ -32,12 +32,10 @@
 		<div class="header_inner d-flex flex-row align-items-center justify-content-start">
 			<div class="logo"><a href="{% url 'home' %}">ShowtimeFinder</a></div>
 			<nav class="main_nav">
-				<ul>
+				<ul style="margin-left:250px">
 					{% if user.is_authenticated %}
 						  <li><a href="{% url 'home' %}">Home</a></li>
 					{% endif %}
-          			<li><a href="{% url 'home' %}">GetFreePosters</a></li>
-          			<li><a href="{% url 'home' %}">SerachByMovie</a></li>
 					 <li><a href="{% url 'AboutUs' %}">AboutUs</a></li>
 					 {% if user.is_authenticated == False %}
 		  			<li><a href="{% url 'login_page' %}">Login</a></li>
@@ -70,8 +68,5 @@
     {% block content %}
     {% endblock %}
 </main>
-<footer class="footer">
-	<span>Scroll Up</span>
-</footer>
 </body>
 </html>
