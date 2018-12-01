@@ -1,25 +1,22 @@
 {% extends 'base.html' %}
-
-{% block title %}MovieGenre{% endblock %}
-
 {% block content %}
-<div class="container-title">
-   <div class="center-genre">
-  <h3>Select you favourite genre</h3>  
-   
-<form method="post">
-  {% csrf_token %}
-  {{form.as_p}}
-  <button type="submit" class="btn btn-info btn-default">Next</button>
-
-  <!-- <table>
-      {{ form.as_table }}
-      <tr>
-          <td></td> -->
-</form>
-<br>
-</div>
-</div>
+<div class="topratedmovies">
+  <div class="container">
+      <div class="row">
+          <div class="col">
+              <div class="section_title_container" style="padding-top: 50px;">
+                <form method="post">
+                    <div class = "form-check" style="list-style-type: none;color:#929191;">
+                  {% csrf_token %}
+                  <p><b>{{form.as_ul}}</b></p>
+                  </div>
+                  <button type="submit" class="btn btn-info btn-default btn-block">Next</button>
+                </form>
+              </div>
+              </div>
+          </div>
+      </div>
+  </div>
 {% endblock %}
 
 

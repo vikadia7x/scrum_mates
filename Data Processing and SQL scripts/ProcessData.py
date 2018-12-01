@@ -1,8 +1,9 @@
 import requests,json,csv
+import config
 def genre():
-    url = 'https://api.themoviedb.org/3/genre/movie/list?api_key=yourapikey'
-    print(1)
-    response = requests.request("GET",url)
+
+    url = 'https://api.themoviedb.org/3/genre/movie/list?api_key={}'
+    response = requests.request("GET",url.format(config.TMDB_API_KEY))
     print(response.text)
     genrelist = json.loads(str(response.text))
     print(genrelist)

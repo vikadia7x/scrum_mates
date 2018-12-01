@@ -3,6 +3,9 @@ import os
 import sys
 
 if __name__ == "__main__":
+    #Added line to execute getkeys.py to update the credentials in settings.py
+    #os.system("python getkeys.py")
+    #Loading settings.py after the creds are changed.
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MovieShowTimeFinder.settings")
     try:
         from django.core.management import execute_from_command_line

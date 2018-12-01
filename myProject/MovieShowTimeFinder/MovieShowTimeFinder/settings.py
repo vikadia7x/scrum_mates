@@ -12,23 +12,48 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import posixpath
+import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+# os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+SOCIAL_AUTH_TWITTER_KEY = os.getenv('SOCIAL_AUTH_TWITTER_KEY')
+SOCIAL_AUTH_TWITTER_SECRET = os.getenv('SOCIAL_AUTH_TWITTER_SECRET')
+
+SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('SOCIAL_AUTH_FACEBOOK_KEY')  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('SOCIAL_AUTH_FACEBOOK_SECRET')
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+# SOCIAL_AUTH_TWITTER_KEY = config.SOCIAL_AUTH_TWITTER_KEY
+# SOCIAL_AUTH_TWITTER_SECRET = config.SOCIAL_AUTH_TWITTER_SECRET
+#
+# SOCIAL_AUTH_FACEBOOK_KEY = config.SOCIAL_AUTH_FACEBOOK_KEY  # App ID
+# SOCIAL_AUTH_FACEBOOK_SECRET = config.SOCIAL_AUTH_FACEBOOK_SECRET
+#
+#
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+
+SECRET_KEY = config.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+# REMOVED SECRET_KEY, ALL CAPS STRING PLACE HOLDERS IN DATABASES & DEFAULT_FROM_EMAIL
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DEFAULT_FROM_EMAIL = 'sendgrid_azure'
+DEFAULT_FROM_EMAIL = config.AZURE_SEND_GRID
 
 # Application definition
 
@@ -41,8 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'urlparams'
-
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'MovieShowTimeFinder.urls'
@@ -69,10 +94,21 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',  # <--
+                'social_django.context_processors.login_redirect', # <--
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.open_id.OpenIdAuth',
+    'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'MovieShowTimeFinder.wsgi.application'
 
@@ -82,17 +118,16 @@ LOGOUT_REDIRECT_URL = 'landing'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-#Database values have been replaced with dummy values.
 DATABASES = {
     'default': {
-        'ENGINE': 'engine_name',
-        'NAME': 'you_database_name',
-        'USER': 'you_user_name',
-        'PASSWORD': 'your_password',
-        'HOST': 'azure_server_name',
-        'PORT': 'portname',
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': config.DATABASE_NAME,
+        'USER': config.DATABASE_USER,
+        'PASSWORD': config.DATABASE_PASSWORD,
+        'HOST': config.DATABASE_HOST_SERVER,
+        'PORT': '1433',
         'OPTIONS': {
-            'driver': 'driver',
+            'driver': 'ODBC Driver 13 for SQL Server',
              'MARS_Connection': 'True',
         }
     }
@@ -144,8 +179,8 @@ AUTH_PROFILE_MODULE = 'showtimefinder.UserProfile'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'sendgrid_azurename'
-EMAIL_HOST_PASSWORD = 'sendgrid_password'
+EMAIL_HOST_USER = config.AZURE_SEND_GRID
+EMAIL_HOST_PASSWORD = config.AZURE_SEND_GRID_PASSWORD
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

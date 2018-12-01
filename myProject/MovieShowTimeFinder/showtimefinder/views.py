@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect , HttpResponse
 from django.urls import reverse
-from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm
+from showtimefinder.forms import SignUpForm, LoginForm, EditProfileForm, EditUserProfileForm
 from showtimefinder.forms import SearchForm, MovieSelection
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -13,7 +13,7 @@ from django.core.mail import EmailMessage
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
-from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies
+from showtimefinder.models import UserProfile, MovieGenreList, MovieGenreSelection, UserSelectMovies,RecommendedMovie
 from showtimefinder.models import User
 from django.db.models import Q
 from bs4 import BeautifulSoup
@@ -22,6 +22,22 @@ from requests import get
 import geocoder
 import requests
 from django.core import serializers
+import config, pyodbc, datetime, ast, math, os
+import threading
+import multiprocessing
+import threading, queue
+from operator import itemgetter
+
+
+def createDBConnection():
+    server = config.DATABASE_HOST_SERVER
+    database = config.DATABASE_NAME
+    username = config.DATABASE_USER
+    password = config.DATABASE_PASSWORD
+    #driver='/usr/local/lib/libmsodbcsql.13.dylib'
+    # driver = {ODBC Driver 13 for SQL Server}
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+    return cnxn
 
 def signup(request):
     if request.method == 'POST':
@@ -43,15 +59,14 @@ def signup(request):
             'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'token': account_activation_token.make_token(user),
             })
-            print(user.email)
-            send_mail(subject, message,'azure_user_sendgrid',[user.email])
-            return redirect('landing.html')
+            send_mail(subject, message,config.AZURE_SEND_GRID,[user.email])
+        return redirect('landing.html')
     else:
         form = SignUpForm()
         return render(request, 'signup.html', {'form': form})
 
 
-def activate(request, uidb64, token):
+def activate(request, uidb64, token, backend='django.contrib.auth.backends.ModelBackend'):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -61,7 +76,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.userprofile.email_confirmed = True
         user.save()
-        login(request, user)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return HttpResponse('Account activated successfully')
     else:
         return HttpResponse('Activation link is invalid!')
@@ -72,7 +87,6 @@ def login_page(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            # password = forms.CharField(max_length=32, widget=forms.PasswordInput)
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -94,7 +108,74 @@ def login_page(request):
         context = {'form': form}
         return render(request, 'login.html', context)
 
+# def edit_profile(request):
+#     if request.method == 'POST':
+#         form = EditProfileForm(request.POST, instance=request.user)
+#         if form.is_valid():
+#             zipcode = form.cleaned_data.get('zipcode')
+#             dateofbirth = form.cleaned_data.get('dateofbirth')
+#             user = User.objects.filter(username=request.user).values()
+#             UserProfile.objects.filter(user_id = user[0].get('id')).update(zipcode = zipcode,dateofbirth=dateofbirth)
+
+#         return redirect('userprofile.html')
+#     else:
+#         form = EditProfileForm(instance=request.user.userprofile)
+#         args = {'form': form}
+#         return render(request, 'edit_profile.html', args)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form1 = EditProfileForm(request.POST,instance = request.user)
+        form2 = EditUserProfileForm(request.POST,instance = request.user.userprofile)
+        if form1.is_valid():
+            if(form1.cleaned_data.get('first_name') is not None):
+                firstname = form1.cleaned_data.get('first_name')
+                print(firstname)
+            else:
+                user = User.objects.filter(username=request.user).values()
+                firstname = user[0].get('first_name')
+
+            if(form1.cleaned_data.get('last_name') is not None):
+                lastname = form1.cleaned_data.get('last_name')
+            else:
+                user = User.objects.filter(username=request.user).values()
+                lastname = user[0].get('last_name')
+
+            if(form1.cleaned_data.get('email') is not None):
+                email = form1.cleaned_data.get('email')
+            else:
+                user = User.objects.filter(username=request.user).values()
+                email = user[0].get('email')
+            User.objects.filter(username=request.user).update(first_name = firstname, last_name = lastname, email = email)
+        if form2.is_valid():
+            zipcode = form2.cleaned_data.get('zipcode')
+            print(zipcode)
+            dateofbirth = form2.cleaned_data.get('dateofbirth')
+            user = User.objects.filter(username=request.user).values()
+            UserProfile.objects.filter(user_id = user[0].get('id')).update(zipcode = zipcode,dateofbirth=dateofbirth)
+            print(UserProfile.objects.filter(user_id = user[0].get('id')))
+        return redirect('userprofile.html')
+
+    else:
+        form1 = EditProfileForm(instance = request.user)
+        form2 = EditUserProfileForm(instance = request.user.userprofile)
+        args = {'form1': form1, 'form2': form2}
+        return render(request, 'edit_profile.html', args)
+
+def userprofile(request):
+    user = User.objects.filter(username=request.user).values()
+    userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+    zipcode = userprofile[0].get('zipcode')
+    dob = userprofile[0].get('dateofbirth')
+    userdetails = {
+    'zipcode': zipcode,
+    'dateofbirth': dob}
+    return render(request,'userprofile.html', userdetails)
+
 def select(request):
+    user = User.objects.filter(username=request.user).values()
+    #userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
+    UserSelectMovies.objects.filter(userId = user[0].get('id')).update(isMovieRec = 0)
     if request.method == 'POST':
         form = MovieSelection(request.POST)
         if form.is_valid():
@@ -144,11 +225,6 @@ def select(request):
                 genre_list['Fantasy'] = Fantasy
             else:
                 genre_list['Fantasy'] = 0
-            History = form.cleaned_data.get('History')
-            if (History==1):
-                genre_list['History'] = History
-            else:
-                genre_list['History'] = 0
             Horror = form.cleaned_data.get('Horror')
             if (Horror==1):
                 genre_list['Horror'] = Horror
@@ -231,13 +307,9 @@ def select(request):
         if(Family==1):
             listmovie_Family = MovieGenreSelection.objects.filter(Family = genre_list['Family']).values()
 
-        listmovie_History = MovieGenreSelection.objects.filter(History = None).values()
-        if(History==1):
-            listmovie_History = MovieGenreSelection.objects.filter(History = genre_list['History']).values()
-        
         listmovie_Horror = MovieGenreSelection.objects.filter(Horror = None).values()
         if(Horror==1):
-            listmovie_History = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
+            listmovie_Horror = MovieGenreSelection.objects.filter(Horror = genre_list['Horror']).values()
 
         listmovie_Music = MovieGenreSelection.objects.filter(Music = None).values()
         if(Music==1):
@@ -280,7 +352,6 @@ def select(request):
         | listmovie_Documentary
         | listmovie_Family
         | listmovie_Fantasy
-        | listmovie_History
         | listmovie_Horror
         | listmovie_Music
         | listmovie_Mystery
@@ -290,7 +361,7 @@ def select(request):
         | listmovie_Thriller
         | listmovie_Western
         | listmovie_War
-        ).distinct().order_by('popularity').reverse()
+        ).distinct().filter(votecount__gte='100').order_by('voteavg','popularity').reverse()
 
         list_genre = list(listmovie)
         list_genre = list_genre[:20]
@@ -304,8 +375,10 @@ def select(request):
 def displaymovies(request):
     if request.method == 'POST':
         userselectmovieslist = request.POST.getlist("check")
+        print(userselectmovieslist)
         for movies in userselectmovieslist:
-            uSelect = UserSelectMovies(userId=request.user,movieId = movies)
+            movieselect = MovieGenreSelection.objects.filter(tmdbId=movies).values()
+            uSelect = UserSelectMovies(userId=request.user,tmdbId = movies, movieName = movieselect[0].get('title'))
             uSelect.save()
         return redirect('home.html')
     else:
@@ -319,206 +392,348 @@ def landing(request):
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        url = 'https://www.imdb.com/showtimes/US/{}'
+
+        #call for imdbid in a list
+        url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
-        movielist = scrapeData(response)
+        getmovielist = scrapeMovie(response, text)
+
+        #call for getting threatre list by passing movielist
+        movieThreatreList = scrapeThreatre(getmovielist,text)
+
+        #get movie data from db to display
+        movie_info_list = getMovieInfoFromDB(set(getmovielist))
+
+        #popular movie posters in HD
+        pickpopularmovies = 'https://www.imdb.com/showtimes/location/US/{}'
+        pickpopularmoviesresp = get(pickpopularmovies.format(text))
+        popularmovieposterlinks = scrapePosterInfoData(pickpopularmoviesresp)
+
+        #latest movie posters in HD
+        picklatestmovies = 'https://www.imdb.com/showtimes/location/US/{}?sort=release_date,desc&st_dt='+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'&mode=showtimes_grid&page=1'
+        picklatestmoviesrep = get(picklatestmovies.format(text))
+        picklatestmoviesreplinks = scrapePosterInfoData(picklatestmoviesrep)
 
         args = {
-            'text': text,
+            'movie_info_list' : movie_info_list,
+            'movieThreatreList' : movieThreatreList,
             'form': form,
-            'movielist' : movielist
+            'popular_movies' : popularmovieposterlinks,
+            'latest_movies' : picklatestmoviesreplinks
         }
         return render(request, 'landing.html', args)
     else:
         form = SearchForm()
         g = geocoder.ip('me')
-        url = 'https://www.imdb.com/showtimes/US/{}'
-        response = get(url.format(g.postal))
-        movielist = scrapeData(response)
+        if (g.postal is not '85281'):
+            text = '85281'
+        else:
+            text = g.postal
+
+        #call for imdbid in a list
+        url = 'https://www.imdb.com/showtimes/location/US/{}'
+        response = get(url.format(text))
+
+        getmovielist = scrapeMovie(response, text)
+
+        #call for getting threatre list by passing movielist
+        movieThreatreList = scrapeThreatre(getmovielist,text)
+
+        #get movie data from db to display
+        movie_info_list = getMovieInfoFromDB(set(getmovielist))
+
+        #popular movie posters in HD
+        pickpopularmovies = 'https://www.imdb.com/showtimes/location/US/{}'
+        pickpopularmoviesresp = get(pickpopularmovies.format(text))
+        popularmovieposterlinks = scrapePosterInfoData(pickpopularmoviesresp)
+
+        #latest movie posters in HD
+        picklatestmovies = 'https://www.imdb.com/showtimes/location/US/{}?sort=release_date,desc&st_dt='+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'&mode=showtimes_grid&page=1'
+        picklatestmoviesrep = get(picklatestmovies.format(text))
+        picklatestmoviesreplinks = scrapePosterInfoData(picklatestmoviesrep)
+
         args = {
-            'movielist' : movielist,
-            'form': form
+            'movie_info_list' : movie_info_list,
+            'movieThreatreList' : movieThreatreList,
+            'form': form,
+            'popular_movies' : popularmovieposterlinks,
+            'latest_movies' : picklatestmoviesreplinks
         }
         return render(request, 'landing.html', args)
-
-def userprofile(request):
-    user = User.objects.filter(username=request.user).values()
-    userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
-    zipcode = userprofile[0].get('zipcode')
-    dob = userprofile[0].get('dateofbirth')
-    userdetails = {
-    'zipcode': zipcode,
-    'dateofbirth': dob}
-    return render(request,'userprofile.html', userdetails)
-
-def edit_profile(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance=request.user)
-
-        if form.is_valid():
-            user = form.save()
-            current_site = get_current_site(request)
-            subject = 'Your details are Updated'
-            message = render_to_string('UserEdit_email.html')
-            # , {
-            # 'user': user,
-            # 'domain': current_site.domain,
-            # 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-            # 'token': account_activation_token.make_token(user),
-            # })
-            send_mail(subject, message,'azuresendgrid_user',[user.email])
-
-            #user.send_email(subject, message)
-            #email.send()
-            return redirect(reverse('userprofile'))
-    else:
-        form = EditProfileForm(instance=request.user)
-        args = {'form': form}
-        return render(request, 'edit_profile.html', args)
 
 def AboutUs(request):
     return render(request,'AboutUs.html')
 
 def home(request):
+    # cnxn = createDBConnection()
+    # cursor = cnxn.cursor()
+    # print(str(request.user))
+    # infoString = "TRUNCATE TABLE showtimefinder_recommendedmovie"
+    # print(infoString)
+    # print(cursor.execute(infoString))
+    # cursor.execute(infoString)
+    command = "python final_recommendation.py " + str(request.user)
+    print(command)
+    os.system("cd ..")
+    os.system(command)
+    #os.system("python notification.py")
+    os.system("cd showtimefinder")
     if(request.method == 'POST'):
         form  = SearchForm(request.POST)
         if form.is_valid():
             text = form.cleaned_data['post']
             form = SearchForm()
-        url = 'https://www.imdb.com/showtimes/US/{}'
+
+        #call for imdbid in a list
+        url = 'https://www.imdb.com/showtimes/location/US/{}'
         response = get(url.format(text))
-        movielist = scrapeData(response)
+        getmovielist = scrapeMovie(response, text)
+
+        #call for getting threatre list by passing movielist
+        movieThreatreList = scrapeThreatre(getmovielist,text)
+
+        #get movie data from db to display
+        movie_info_list = getMovieInfoFromDB(set(getmovielist))
+
+        #popular movie posters in HD
+        pickpopularmovies = 'https://www.imdb.com/showtimes/location/US/{}'
+        pickpopularmoviesresp = get(pickpopularmovies.format(text))
+        popularmovieposterlinks = scrapePosterInfoData(pickpopularmoviesresp)
+
+        #latest movie posters in HD
+        picklatestmovies = 'https://www.imdb.com/showtimes/location/US/{}?sort=release_date,desc&st_dt='+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'&mode=showtimes_grid&page=1'
+        picklatestmoviesrep = get(picklatestmovies.format(text))
+        picklatestmoviesreplinks = scrapePosterInfoData(picklatestmoviesrep)
 
         args = {
-            'text': text,
+            'movie_info_list' : movie_info_list,
+            'movieThreatreList' : movieThreatreList,
             'form': form,
-            'movielist' : movielist
+            'popular_movies' : popularmovieposterlinks,
+            'latest_movies' : picklatestmoviesreplinks
         }
         return render(request, 'home.html', args)
     else:
+        #os.system("python hello.py")
         form = SearchForm()
         user = User.objects.filter(username=request.user).values()
         userprofile = UserProfile.objects.filter(user_id = user[0].get('id')).values()
         zipcode = userprofile[0].get('zipcode')
-        url = 'https://www.imdb.com/showtimes/US/{}'
-        response = get(url.format(zipcode))
-        movielist = scrapeData(response)
+        text = zipcode
+        uSelect = RecommendedMovie.objects.filter(userId = request.user).values()
+        getmovielist = []
+        i = 0
+        while (i!=len(uSelect)):
+            getmovielist.append(uSelect[i].get('imdb_id'))
+            i = i+1
+
+        #print list
+        #print(getmovielist)
+
+        #movie theatre list
+        movieThreatreList = scrapeThreatre(set(getmovielist),text)
+        #get movie data from db to display
+        movie_info_list = getMovieInfoFromDB(set(getmovielist))
+
+        res= sorted(movie_info_list, key=itemgetter('popularity'),reverse=True)
+        # res2= sorted(res1, key=itemgetter('popularity'),reverse=True)
+
         args = {
-            'movielist' : movielist,
+            'movie_info_list' : res,
+            'movieThreatreList' : movieThreatreList,
             'form': form
         }
         return render(request, 'home.html', args)
 
-def scrapeData(response):
-        html_soup = BeautifulSoup(response.text, 'html.parser')
-        movielist = []
-        odditems = html_soup.find_all('div', class_ = 'list_item odd')
-        movielistodd = []
-        for item in odditems:
-            threater_name = item.find('div', class_= 'fav_box').a.text
-            threater_streetaddress = item.find('div', class_='address').find('span', attrs = {'itemprop':'streetAddress'}).text
-            threater_addressLocality = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressLocality'}).text
-            threater_addressRegion = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressRegion'}).text
-            threater_postalCode = item.find('div', class_='address').find('span', attrs = {'itemprop':'postalCode'}).text
-            if(item.find('div', class_='address').find('span', attrs = {'itemprop':'telephone'}) is not None):
-                threater_telephone = item.find('div', class_='address').find('span', attrs = {'itemprop':'telephone'}).text
-            else:
-                threater_telephone = 'NA'
-            threatre_address = threater_streetaddress + ", " + threater_addressLocality + " " + threater_addressRegion + " " + threater_postalCode
-            movies = item.find_all('div', class_ = 'list_item')
-            movielistall = []
-            movielistall.append(threater_name)
-            movielistall.append(threatre_address)
-            movielistall.append(threater_telephone)
-            for x in movies:
-                if((x.find('div', class_ = 'info').h4.span) is not None):
-                    movie_name = x.find('div', class_ = 'info').h4.span.a.text
-                else:
-                    movie_name = 'NA'
-                if((x.find('div', class_ = 'image_sm').a) is not None):
-                    movie_imgURL = x.find('div', class_ = 'image_sm').a.img['src']
-                else:
-                    movie_imgURL = 'NA'
-                if(x.find('div', class_ = 'info').time is not None):
-                    movie_duration = x.find('div', class_ = 'info').time.text
-                else:
-                    movie_duration = 'NA'
-                if((x.find('div', class_ = 'info').strong) is not None):
-                    movie_rating = x.find('div', class_ = 'info').strong.text
-                else:
-                    movie_rating = 'NA'
-                showtime = x.find('div' , class_ = 'showtimes')
-                if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
-                    movie_showtime = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-displaytimes']
-                else:
-                    movie_showtime = 'NA'
-                if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
-                    movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
-                else:
-                    movie_showdate = 'NA'
-                movie_details = [
-                     movie_name,
-                     movie_imgURL,
-                     movie_duration,
-                     movie_rating,
-                     movie_showtime,
-                     movie_showdate
-                     ]
-                movielistall.append(movie_details)
-            movielistodd.append(movielistall)
-            movielist.append(movielistodd)
 
+def scrapeMovie(response,text):
+    movie_list = []
+    html_soup= BeautifulSoup(response.text, 'html.parser')
+    soupdata = html_soup.find_all('div', class_ = 'lister-item-image ribbonize')
+    for item in soupdata[:5]:
+        imdbId = item['data-tconst']
+        movie_list.append(imdbId)
+    return movie_list
 
-        evenitems = html_soup.find_all('div', class_ = 'list_item even')
-        movielisteven = []
-        for item in evenitems:
+def scrapeThreatre(movielist, text):
+    movie_threatre = []
+    url = 'https://www.imdb.com/showtimes/title/{0}/US/{1}'
+    for imdbid in movielist:
+        response = get(url.format(imdbid,text))
+        html_soup_1= BeautifulSoup(response.text, 'html.parser')
+        soupdata = html_soup_1.find_all('div', class_ = 'list_item odd')
+        for item in soupdata[:1]:
             threater_name = item.find('div', class_= 'fav_box').a.text
             threater_streetaddress = item.find('div', class_='address').find('span', attrs = {'itemprop':'streetAddress'}).text
             threater_addressLocality = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressLocality'}).text
             threater_addressRegion = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressRegion'}).text
             threater_postalCode = item.find('div', class_='address').find('span', attrs = {'itemprop':'postalCode'}).text
             threater_telephone = item.find('div', class_='address').find('span', attrs = {'itemprop':'telephone'}).text
-            threatre_address = threater_streetaddress + ", " + threater_addressLocality + " " + threater_addressRegion + " " + threater_postalCode
-            movies = item.find_all('div', class_ = 'list_item')
-            movielistall = []
-            movielistall.append(threater_name)
-            movielistall.append(threatre_address)
-            movielistall.append(threater_telephone)
-            for x in movies:
-                if((x.find('div', class_ = 'info').h4.span) is not None):
-                    movie_name = x.find('div', class_ = 'info').h4.span.a.text
-                else:
-                    movie_name = 'NA'
-                if((x.find('div', class_ = 'image_sm').a) is not None):
-                    movie_imgURL = x.find('div', class_ = 'image_sm').a.img['src']
-                else:
-                    movie_imgURL = 'NA'
-                if(x.find('div', class_ = 'info').time is not None):
-                    movie_duration = x.find('div', class_ = 'info').time.text
-                else:
-                    movie_duration = 'NA'
-                if((x.find('div', class_ = 'info').strong) is not None):
-                    movie_rating = x.find('div', class_ = 'info').strong.text
-                else:
-                    movie_rating = 'NA'
-                showtime = x.find('div' , class_ = 'showtimes')
-                if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
-                    movie_showtime = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-displaytimes']
-                else:
-                    movie_showtime = 'NA'
-                if(showtime.find('a', class_ = 'btn2 btn2_simple medium') is not None):
-                    movie_showdate = showtime.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
-                else:
-                    movie_showdate = 'NA'
-                movie_details = [
-                     movie_name,
-                     movie_imgURL,
-                     movie_duration,
-                     movie_rating,
-                     movie_showtime,
-                     movie_showdate
-                    ]
-                movielistall.append(movie_details)
-            movielisteven.append(movielistall)
-            movielist.append(movielisteven)
-            return movielist
+            if(item.find('a', class_ = 'btn2 btn2_simple medium') is None):
+                movie_showdate = 'NA'
+            else:
+                movie_showdate = item.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
+            if(item.find('a', class_ = 'btn2 btn2_simple medium') is None):
+                movie_showtime = 'NA'
+            else:
+                movie_showtime = item.find('a', class_ = 'btn2 btn2_simple medium')['data-displaytimes']
+            movie_info = {
+                'imdbid': imdbid,
+                'threater_name' : threater_name,
+                'threater_streetaddress' : threater_streetaddress,
+                'threater_addressLocality' : threater_addressLocality,
+                'threater_addressRegion' : threater_addressRegion,
+                'threater_postalCode' : threater_postalCode,
+                'threater_telephone' : threater_telephone,
+                'movie_showdate': movie_showdate,
+                'movie_showtime': movie_showtime
+                }
+            movie_threatre.append(movie_info)
+
+    for imdbid in movielist:
+        response = get(url.format(imdbid,text))
+        html_soup_1= BeautifulSoup(response.text, 'html.parser')
+        soupdata = html_soup_1.find_all('div', class_ = 'list_item even')
+        for item in soupdata[:1]:
+            threater_name = item.find('div', class_= 'fav_box').a.text
+            threater_streetaddress = item.find('div', class_='address').find('span', attrs = {'itemprop':'streetAddress'}).text
+            threater_addressLocality = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressLocality'}).text
+            threater_addressRegion = item.find('div', class_='address').find('span', attrs = {'itemprop':'addressRegion'}).text
+            threater_postalCode = item.find('div', class_='address').find('span', attrs = {'itemprop':'postalCode'}).text
+            threater_telephone = item.find('div', class_='address').find('span', attrs = {'itemprop':'telephone'}).text
+            if(item.find('a', class_ = 'btn2 btn2_simple medium') is None):
+                movie_showdate = 'NA'
+            else:
+                movie_showdate = item.find('a', class_ = 'btn2 btn2_simple medium')['data-date']
+            if(item.find('a', class_ = 'btn2 btn2_simple medium') is None):
+                movie_showdate = 'NA'
+            else:
+                movie_showtime = item.find('a', class_ = 'btn2 btn2_simple medium')['data-displaytimes']
+
+            movie_info = {
+                'imdbid': imdbid,
+                'threater_name' : threater_name,
+                'threater_streetaddress' : threater_streetaddress,
+                'threater_addressLocality' : threater_addressLocality,
+                'threater_addressRegion' : threater_addressRegion,
+                'threater_postalCode' : threater_postalCode,
+                'threater_telephone' : threater_telephone,
+                'movie_showdate': movie_showdate,
+                'movie_showtime': movie_showtime
+                }
+            movie_threatre.append(movie_info)
+    return movie_threatre
+
+def scrapePosterInfoData(pickpopularmoviesresp):
+    cnxn = createDBConnection()
+    cursor = cnxn.cursor()
+    html_soup = BeautifulSoup(pickpopularmoviesresp.text, 'html.parser')
+    poster_link = []
+    poster = html_soup.find_all('h3', class_ = 'lister-item-header')
+    for item in poster:
+        movieid = item.find('a')
+        imdbid = movieid['href'].split('/')[3]
+        query_meta = "SELECT poster_path FROM [dbo].[NowPlayingData] Where imdb_id='" + imdbid +"'"
+        cursor.execute(query_meta)
+        result = cursor.fetchall()
+        for row in result :
+            if(row[0] is not None):
+                poster_link.append("https://image.tmdb.org/t/p/original/"+row[0])
+    return poster_link
+
+def getMovieInfoFromDB(imdbList):
+    cnxn = createDBConnection()
+    cursor = cnxn.cursor()
+    movie_info_list = []
+    for item in imdbList:
+        query_meta = "SELECT title, convert(float,popularity) as p, overview, release_date,runtime,vote_average,poster_path,imdb_id FROM [dbo].[NowPlayingData] Where imdb_id='" + item +"'"
+        cursor.execute(query_meta)
+        result = cursor.fetchall()
+        for row in result :
+            movie_info = {
+                'title': row[0],
+                'popularity':row[1],
+                'overview': row[2],
+                'release_date': datetime.datetime.strftime(row[3],'%b. %d %Y'),
+                'runtime': row[4],
+                'vote_average': int(math.floor(float(row[5]))/2),
+                'poster': "https://image.tmdb.org/t/p/w500" + row[6],
+                'poster_path' : "https://image.tmdb.org/t/p/original/"+row[6],
+                'imdbId': row[7]
+            }
+            movie_info_list.append(movie_info)
+    return movie_info_list
+
+def movieInfo(request):
+   query = request.GET.get('id')
+   api_key = config.TMDB_API_KEY
+   # connect to the ODBC database
+   cxn = createDBConnection()
+   cursor = cxn.cursor()
+    
+   infoString = "SELECT budget, genres, homepage, original_title, overview, poster_path, production_companies, production_countries, release_date, revenue, runtime, spoken_languages, tagline, title FROM [dbo].[NowPlayingData] WHERE imdb_id='"+ query +"'"
+   cursor.execute(infoString)
+   result1 = cursor.fetchall()
+   movieIdString = "SELECT movieId, tmdbId FROM [dbo].[NowPlayingLinks] WHERE imdbId='"+query+"'"
+   cursor.execute(movieIdString)
+   result2 = cursor.fetchall()
+   castString = "SELECT cast, crew FROM [dbo].[NowPlayingCredits] WHERE id='"+str(result2[0][1])+"'" #tmdbId
+   cursor.execute(castString)
+   result3 = cursor.fetchall()
+   
+   #get the poster path image
+   posterlink = "https://image.tmdb.org/t/p/original/"+result1[0][5]
+
+   #Get video info:
+   video = requests.get("https://api.themoviedb.org/3/movie/"+query+"/videos?api_key="+api_key+"&language=en-US").json()
+   videoLink= "https://www.youtube.com/embed/"
+   videoLink = videoLink+str(video["results"][0]["key"])
+  
+
+   # convert genres to a list
+   genre = []
+   lang = []
+   company =[]
+   countries=[]
+   # Split string values
+   langList =result1[0][11].split()
+   genreList= result1[0][1].split()
+   companyList = result1[0][6].split(",")
+   countryList = result1[0][7].split()
+   for i in range(len(genreList)):
+       if(genreList[i] == "'name':"):
+           genre.append(genreList[i+1][1:-3]) # remove unnecessary elements
+    
+   for i in range(len(langList)):
+        if(langList[i]=="'name':"):
+            lang.append(langList[i+1][1:-3])
+   
+   for i in range(len(companyList)):
+       if("'name':" in companyList[i]):
+            company.append(companyList[i][10:-1])
+    
+   for i in range(len(countryList)):
+        if(countryList[i] == "'name':"):
+            countries.append(countryList[i-1][1:-2])
+      
+   context = {
+       'budget' : result1[0][0],
+       'genres' : genre,
+       'homepage' : result1[0][2],
+       'originalTitle' : result1[0][3],
+       'overview': result1[0][4],
+       'productionCompanies': company,
+       'productionCountries' : countries,
+       'releaseDate' : result1[0][8],
+       'revenue' : result1[0][9],
+       'runtime' : result1[0][10],
+       'spokenLanguages' : lang,
+       'tagline' : result1[0][12],
+       'title' : result1[0][13],
+       'movieId' : result2[0][0],
+       'movieCast' : result3[0][0],
+       'movieCrew' : result3[0][1],
+       'posterPath' : posterlink,
+       'video' : videoLink
+   } 
+   return render(request,'movie_info.html', context)

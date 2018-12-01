@@ -1,25 +1,59 @@
-
-
-{% extends 'base.html' %}
-
-{% block title %}Login{% endblock %}
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{% block title %}Movie Show Time Finder{% endblock %}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Movie Show Time Finder">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static '/bootstrap4/bootstrap.min.css' %}">
+<link href="{% static  'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/owl.carousel.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/owl.theme.default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/plugins/OwlCarousel2-2.2.1/animate.css' %}">
+<link href="{% static '/plugins/colorbox/colorbox.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{% static '/css/main_styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/responsive.css' %}">
+<script src="{% static '/js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static '/bootstrap4/popper.js' %}"></script>
+<script src="{% static '/bootstrap4/bootstrap.min.js' %}"></script>
+<script src="{% static '/plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>
+<script src="{% static '/plugins/easing/easing.js' %}"></script>
+<script src="{% static '/plugins/parallax-js-master/parallax.min.js' %}"></script>
+<script src="{% static '/plugins/colorbox/jquery.colorbox-min.js' %}"></script>
+<script src="{% static '/js/custom.js' %}"></script>
+</head>
+<body>
 
 {% block content %}
-<div class="container">
-<br>
-<div class="center1">
-<h2>Login Here</h2>
-{% for message in messages %} 
-<p style="color: crimson">{{ message }} </p>
-{% endfor %}
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-info btn-default">Login Here</button>
-<a href="{% url 'password_reset' %}">Forgot Password ?</a>
-</form>
-<br>
-<br>
-</div>
-</div> 
+<div class="topratedmovies">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+              <div class="section_title_container text-center">
+                <h3 style="margin-bottom: 15px;">Login Here</h3>
+                  {% for message in messages %}
+                    <p style="color: crimson">{{ message }} </p>
+                  {% endfor %}
+                    <form method="post">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                    <button type="submit" class="btn btn-info btn-default">Login Here</button>
+                    <a href="{% url 'password_reset' %}">Forgot Password ?</a>
+                    </form>
+                    <br>
+            <!-- <a href="{% url 'social:begin' 'twitter' %}">Login with Twitter</a>
+            <br>
+            <br>
+            <a href="{% url 'social:begin' 'facebook' %}">Login with Facebook</a>
+            <br>
+            <br>
+            <a href="{% url 'social:begin' 'google-oauth2' %}">Login with Google+</a>
+            <br> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 {% endblock %}
