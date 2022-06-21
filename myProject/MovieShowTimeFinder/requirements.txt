@@ -28,7 +28,7 @@ mccabe==0.6.1
 msrest==0.6.1
 msrestazure==0.5.1
 nltk==3.4
-numpy==1.15.3
+numpy==1.22.0
 oauthlib==2.1.0
 pandas==0.23.4
 public==1.0.3
